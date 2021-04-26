@@ -71,11 +71,11 @@ exports.generateRefreshToken = (userId) => {
 exports.logout = async (req, res, next) => {
     const userId = req.user.userId;
 
-    const token = await redisClient.get(userId.toString());
-
+    // Delete refresh token for given user id
     await redisClient.del(userId.toString());
 
-    await redisClient.set("BL_" + userId.toString(), token);
+    // Blacklist access token
+    await redisClient.set("BL_" + userId.toString(), req.token);
 
     return res.status(200).json({message: "Successfully logged out"})
 }
