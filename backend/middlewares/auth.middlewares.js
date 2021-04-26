@@ -14,7 +14,6 @@ exports.verifyToken = (req, res, next) => {
         }
 
         req.user = decoded;
-        req.token = token;
 
         redisClient.get("BL_" + decoded.userId.toString(), (err, data) => {
             if (err) throw err;
