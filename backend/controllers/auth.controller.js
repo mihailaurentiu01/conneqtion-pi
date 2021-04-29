@@ -4,7 +4,7 @@ const redisClient = require("../redis_connect");
 const bcrypt = require("bcrypt");
 
 // TODO ADD VALIDATION
-exports.register = async (req, res, next) => {
+exports.signup = async (req, res, next) => {
     const password = req.body.password;
     const encryptedPassword = await bcrypt.hash(password, +process.env.SALT_ROUNDS);
 

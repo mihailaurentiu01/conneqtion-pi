@@ -57,7 +57,19 @@
 
 <script>
 export default {
-name: "Login"
+name: "Login",
+  methods: {
+    testLogin: () => {
+      let email = "test@test.es";
+      let password = "1";
+
+      fetch("http://localhost:3000/v1/auth/login").then(result => {
+        return result.json();
+      }).then(jsonResult => {
+        console.log(jsonResult);
+      }).catch(err => console.log(err))
+    }
+  }
 }
 </script>
 
