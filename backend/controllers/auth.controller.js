@@ -2,6 +2,7 @@ const User = require("../models/user.model");
 const jwt = require("jsonwebtoken");
 const redisClient = require("../redis_connect");
 const bcrypt = require("bcrypt");
+const cookie = require("cookie");
 
 // TODO ADD VALIDATION
 exports.signup = async (req, res, next) => {
@@ -45,7 +46,10 @@ exports.login = async (req, res, next) => {
 
         const refreshToken = this.generateRefreshToken(user._id.toString());
 
-        return res.status(200).json({message: "Login success", data: {accessToken, refreshToken}});
+        // maxAge: +process.env.HTTP_ONLY_COOKIE_MAX_AGE
+        //TODO FIX THE AGE
+        res.setHeader("Set-Cookie", cookie.serialize("RefreshToken", refreshToken, {httpOnly: true, path: "/", secure: true, maxAge: +process.env.HTTP_ONLY_COOKIE_MAX_AGE}));
+        res.status(200).json({message: "Login success", data: {accessToken}});
     } catch (error){
         if (!error.httpStatusCode){
             error.httpStatusCode = 500;

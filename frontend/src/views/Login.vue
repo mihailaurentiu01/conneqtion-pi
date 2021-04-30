@@ -30,7 +30,7 @@
 
           <div class="row d-flex justify-content-center mt-3">
             <div class="col-md-5">
-              <form>
+              <form @submit.prevent="testLogin">
                 <div class="form-group">
                   <input type="text" class="form-control" id="username" placeholder="Username">
                 </div>
@@ -60,10 +60,17 @@ export default {
 name: "Login",
   methods: {
     testLogin: () => {
+
       let email = "test@test.es";
       let password = "1";
-
-      fetch("http://localhost:3000/v1/auth/login").then(result => {
+      let accesstoken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MDhiMDg0MmJiMGY1OTFiZDRkNmViNTkiLCJpYXQiOjE2MTk3ODI3NjUsImV4cCI6MTYxOTc4MzA2NX0.4owgxJwqWpeWfjQj1KaqXJrDfBzX0ohF6hNgNMWniUc";
+      fetch("http://localhost:3000/v1/user/dashboard", {
+        headers: {
+          'Authorization': "Bearer " + accesstoken
+        },
+        method: "GET",
+        credentials: "include"
+      }).then(result => {
         return result.json();
       }).then(jsonResult => {
         console.log(jsonResult);

@@ -2,12 +2,21 @@ require('dotenv').config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 const authRoutes = require("./routes/auth.routes");
 const dashboardRoutes = require("./routes/dashboard.routes");
 
 // Accept json body
 app.use(express.json());
+app.use(cors({
+    origin: "http://localhost:8080",
+    credentials: true
+}));
+
+app.use(cookieParser());
+
 
 // ----ROUTES----
 app.use("/v1/auth", authRoutes);
