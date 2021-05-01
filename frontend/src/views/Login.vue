@@ -51,30 +51,60 @@
           </div>
 
         </div>
+        <button @click="check">check</button>
       </div>
     </div>
 </template>
 
 <script>
+import {mapMutations, mapGetters} from 'vuex';
+import * as keyNames from '../keynames';
+
+import * as SecureLS from "secure-ls";
+
+let ls = new SecureLS({ isCompression: false });
+
 export default {
 name: "Login",
-  methods: {
-    testLogin: () => {
+  data: () => {
+    return {
 
-      let email = "test@test.es";
+    }
+  },
+  computed:{
+    ...mapGetters({
+      getLogin: keyNames.GET_USER_LOGGED_IN
+    }),
+  },
+  methods: {
+  ...mapMutations({
+    activateLogin: keyNames.MUTATE_USER_LOGGED_IN
+  }),
+    testLogin: function() {
+
+      /*let email = "test@test.es";
       let password = "1";
       let accesstoken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MDhiMDg0MmJiMGY1OTFiZDRkNmViNTkiLCJpYXQiOjE2MTk3ODI3NjUsImV4cCI6MTYxOTc4MzA2NX0.4owgxJwqWpeWfjQj1KaqXJrDfBzX0ohF6hNgNMWniUc";
-      fetch("http://localhost:3000/v1/user/dashboard", {
+      fetch("http://localhost:3000/v1/auth/login", {
         headers: {
-          'Authorization': "Bearer " + accesstoken
+          'Content-Type': "application/json"
         },
-        method: "GET",
+        body: JSON.stringify({
+          email,
+          password
+        }),
+        method: "POST",
         credentials: "include"
       }).then(result => {
         return result.json();
       }).then(jsonResult => {
         console.log(jsonResult);
-      }).catch(err => console.log(err))
+      }).catch(err => console.log(err))*/
+
+      this.activateLogin(true);
+    },
+    check: function(){
+      console.log(ls.get("vuex"))
     }
   }
 }

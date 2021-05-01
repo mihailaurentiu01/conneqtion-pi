@@ -1,0 +1,8 @@
+// GETTERS
+export const GET_USER_LOGGED_IN = "global_GET_USER_LOGGED_IN";
+
+// MUTATORS
+export const MUTATE_USER_LOGGED_IN = "global_MUTATE_USER_LOGGED_IN";
+
+// ACTIONS
+export const ACTION_USER_LOGIN = "global_ACTION_USER_LOGIN";
