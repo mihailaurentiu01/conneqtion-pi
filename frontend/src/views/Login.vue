@@ -28,19 +28,33 @@
            </div>
          </div>
 
+          <div v-if="errors.length > 0">
+
+            <h2 style="color: white">Existen errores. Corrijalos</h2>
+
+            <div v-for="error in errors">
+              <div class="alert alert-danger">
+                {{error}}
+              </div>
+            </div>
+          </div>
+
           <div class="row d-flex justify-content-center mt-3">
             <div class="col-md-5">
-              <form @submit.prevent="testLogin">
+
+              <form @submit.prevent="check" novalidate>
                 <div class="form-group">
-                  <input type="text" class="form-control" id="username" placeholder="Username">
+                    <input v-model="email" type="email" class="form-control" id="email" placeholder="E-mail">
                 </div>
                 <div class="form-group">
-                  <input type="password" class="form-control" id="password" placeholder="Password">
+                  <input v-model="password" type="password" class="form-control" id="password" placeholder="Password">
                 </div>
                 <button type="submit" class="btn text-light btn-success">Login <img style="height: 30px; width: 30px;" src="@/assets/icons/key.png" alt="Key"></button>
               </form>
+
             </div>
           </div>
+
           <div class="row d-flex justify-content-center mt-4">
             <div class="col-6 col-md-4">
               <router-link class="text-light" :to="{name: 'forgot'}">Forgot password?</router-link>
@@ -49,7 +63,6 @@
               <router-link class="text-light" :to="{name: 'SignUp'}">Sign Up</router-link>
             </div>
           </div>
-
         </div>
         <button @click="check">check</button>
       </div>
@@ -60,15 +73,18 @@
 import {mapMutations, mapGetters} from 'vuex';
 import * as keyNames from '../keynames';
 
-import * as SecureLS from "secure-ls";
+/*import * as SecureLS from "secure-ls";
 
-let ls = new SecureLS({ isCompression: false });
+let ls = new SecureLS({ isCompression: false });*/
 
 export default {
-name: "Login",
+  name: "Login",
   data: () => {
     return {
-
+      email: '',
+      password: '',
+      errors: [],
+      canLogin: false
     }
   },
   computed:{
@@ -82,35 +98,29 @@ name: "Login",
   }),
     testLogin: function() {
 
-      /*let email = "test@test.es";
-      let password = "1";
-      let accesstoken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MDhiMDg0MmJiMGY1OTFiZDRkNmViNTkiLCJpYXQiOjE2MTk3ODI3NjUsImV4cCI6MTYxOTc4MzA2NX0.4owgxJwqWpeWfjQj1KaqXJrDfBzX0ohF6hNgNMWniUc";
-      fetch("http://localhost:3000/v1/auth/login", {
-        headers: {
-          'Content-Type': "application/json"
-        },
-        body: JSON.stringify({
-          email,
-          password
-        }),
-        method: "POST",
-        credentials: "include"
-      }).then(result => {
-        return result.json();
-      }).then(jsonResult => {
-        console.log(jsonResult);
-      }).catch(err => console.log(err))*/
-
-      this.activateLogin(true);
     },
     check: function(){
-      console.log(ls.get("vuex"))
+    this.errors = [];
+
+      let regEmail = new RegExp("^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$");
+
+      if (!regEmail.test(this.email)){
+        this.errors.push("Reglas del correo: 1.No puede dejar el campo vacio. 2. Dominio minimo 2 caracteres.")
+      }
+
+      if (!this.password.length > 0){
+        this.errors.push("La contraseña no puede estar vacía");
+      }
+
+      this.canLogin = this.errors.length === 0;
     }
   }
 }
+
 </script>
 
 <style scoped>
+
 #user-logo {height: 120px;}
 
 </style>

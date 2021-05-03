@@ -11,8 +11,16 @@ const routes = [
     component: () => import("@/components/Auth.vue"),
     children: [
       {path: "", name: "Login", component: () => import("@/views/Login.vue")},
-      {path: "/signup", name: "SignUp", component: () => import("@/views/SignUp.vue")}
+      {path: "signup", name: "SignUp", component: () => import("@/views/SignUp.vue")}
     ]
+  },
+  {
+    path: "/terms",
+    component: () => import("@/views/Terms")
+  },
+  {
+    path: "/privacy",
+    component: () => import("@/views/PrivacyPolicy")
   }
 ]
 
