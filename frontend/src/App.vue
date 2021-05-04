@@ -4,8 +4,21 @@
       <router-link to="/">Login</router-link> |
     </div>-->
     <router-view/>
+    <footer>
+      <cookie-law></cookie-law>
+    </footer>
   </div>
 </template>
+
+<script>
+  import CookieLaw from 'vue-cookie-law';
+
+  export default {
+    components: {
+      CookieLaw
+    }
+  }
+</script>
 
 <style>
 body, html {

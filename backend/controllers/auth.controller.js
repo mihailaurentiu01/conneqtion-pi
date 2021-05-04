@@ -40,7 +40,6 @@ exports.signup = async (req, res, next) => {
     }
 }
 
-// TODO ADD VALIDATION
 exports.login = async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -48,21 +47,19 @@ exports.login = async (req, res, next) => {
     try {
         const user = await User.findOne({email});
 
-        if (!user) return res.status(404).json({message: "No user is registered with the provided email"});
+        if (!user) return res.status(404).json({message: "No user is registered with the provided email", status: 404});
 
         const passesCheck = await bcrypt.compare(password, user.password);
 
-        if (!passesCheck) return res.status(401).json({message: "Password doesn't match"});
+        if (!passesCheck) return res.status(401).json({data: {message: "Password doesn't match", status: 401}});
 
         const accessToken = jwt.sign({userId: user._id.toString()}, process.env.JWT_ACCESS_SECRET,
             {expiresIn: process.env.JWT_ACCESS_TIME});
 
         const refreshToken = this.generateRefreshToken(user._id.toString());
 
-        // maxAge: +process.env.HTTP_ONLY_COOKIE_MAX_AGE
-        //TODO FIX THE AGE
         res.setHeader("Set-Cookie", cookie.serialize("RefreshToken", refreshToken, {httpOnly: true, path: "/", secure: true, maxAge: +process.env.HTTP_ONLY_COOKIE_MAX_AGE}));
-        res.status(200).json({message: "Login success", data: {accessToken}});
+        res.status(200).json({message: "Login success", data: {accessToken, status: 200}});
     } catch (error){
         if (!error.httpStatusCode){
             error.httpStatusCode = 500;

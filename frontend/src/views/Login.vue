@@ -22,6 +22,10 @@
         <b-alert show variant="success"><b-icon icon="exclamation-circle-fill" variant="success"></b-icon> {{$route.params.message}}</b-alert>
       </div>
 
+      <div v-if="$route.params.error">
+        <b-alert show variant="danger"><b-icon icon="exclamation-circle-fill" variant="danger"></b-icon> {{$route.params.error}}</b-alert>
+      </div>
+
       <div class="row d-flex justify-content-center mt-5">
         <div class="col-md-12">
          <div>
@@ -73,12 +77,9 @@
 </template>
 
 <script>
-import {mapMutations, mapGetters} from 'vuex';
+import {mapMutations} from 'vuex';
+import {doLogin} from '../../services/auth.services';
 import * as keyNames from '../keynames';
-
-/*import * as SecureLS from "secure-ls";
-
-let ls = new SecureLS({ isCompression: false });*/
 
 export default {
   name: "Login",
@@ -90,20 +91,13 @@ export default {
       canLogin: false
     }
   },
-  computed:{
-    ...mapGetters({
-      getLogin: keyNames.GET_USER_LOGGED_IN
-    }),
-  },
   methods: {
-  ...mapMutations({
-    activateLogin: keyNames.MUTATE_USER_LOGGED_IN
-  }),
-    testLogin: function() {
-
-    },
+    ...mapMutations({
+      setLoggedIn: keyNames.MUTATE_USER_LOGGED_IN,
+      setAccessToken: keyNames.MUTATE_USER_ACCESS_TOKEN
+    }),
     check: function(){
-    this.errors = [];
+      this.errors = [];
 
       let regEmail = new RegExp("^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$");
 
@@ -116,8 +110,30 @@ export default {
       }
 
       this.canLogin = this.errors.length === 0;
+
+      if (this.canLogin){
+        let fnLogin = async (cb) => {
+          let status = await doLogin({email: this.email, password: this.password})
+
+          cb(status);
+        }
+
+        fnLogin((data) => {
+          if (data.data.status === 200){
+            this.setLoggedIn(true);
+            this.setAccessToken(data.data.accessToken);
+
+            this.$router.push({name: "Index"});
+          }else if (data.data.status === 404){
+            this.$router.push({name: "Login", params: {error: "No user has been found with the given email"}, query: {email: this.email}});
+          } else if (data.data.status === 401){
+            this.$router.push({name: "Login", params: {error: "Password doesn't match the given email"}, query: {email: this.email}});
+          }
+        })
+      }
     }
   }
+
 }
 
 </script>

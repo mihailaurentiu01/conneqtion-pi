@@ -11,7 +11,8 @@ Vue.use(Vuex);
 
 export const store =  new Vuex.Store({
     state: {
-        loggedIn: false
+        loggedIn: false,
+        accessToken: null
     },
     getters,
     mutations,

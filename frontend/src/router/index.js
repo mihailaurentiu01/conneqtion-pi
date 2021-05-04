@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import SecureLS from 'secure-ls';
 
 
 Vue.use(VueRouter)
@@ -12,7 +12,19 @@ const routes = [
     children: [
       {path: "", name: "Login", component: () => import("@/views/Login.vue")},
       {path: "signup", name: "SignUp", component: () => import("@/views/SignUp.vue")}
-    ]
+    ],
+    beforeEnter: (to, from, next) => {
+      let ls = new SecureLS({isCompression: false});
+      let vuex = ls.get("vuex");
+
+      if (vuex.length > 0) vuex = JSON.parse(ls.get("vuex"));
+
+      if (vuex.loggedIn && vuex.accessToken){
+        return next({name: "Index"})
+      }
+
+      next();
+    }
   },
   {
     path: "/terms",
@@ -23,6 +35,24 @@ const routes = [
     path: "/privacy",
     name: "privacy",
     component: () => import("@/views/PrivacyPolicy")
+  },
+  {
+    path: "/index",
+    name: "Index",
+    component: () => import("@/views/Index"),
+    beforeEnter: (to, from, next) => {
+      let ls = new SecureLS({isCompression: false});
+      let vuex = ls.get("vuex");
+
+      if (vuex.length > 0) vuex = JSON.parse(ls.get("vuex"));
+      else next({name: "Login", params: {error: "You must login first"}});
+
+      if (!vuex.loggedIn){
+       return next({name: "Login", params: {error: "You must login first"}})
+      }
+
+      next();
+    }
   }
 ]
 

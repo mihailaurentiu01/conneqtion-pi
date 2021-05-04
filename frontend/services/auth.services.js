@@ -1,5 +1,7 @@
-exports.doSignup = async (user) => {
+let {store} = require("../src/store");
+let keyNames = require("../src/keynames");
 
+exports.doSignup = async (user) => {
     let data = fetch("/v1/auth/signup", {
         method: "POST",
         headers: {
@@ -26,6 +28,26 @@ exports.doSignup = async (user) => {
         return jsonResult;
     }).catch(err => console.log(err));
 
+
+    return await data;
+}
+
+exports.doLogin = async (user) => {
+    let data = fetch("/v1/auth/login", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            email: user.email,
+            password: user.password
+        })
+    }).then(result => {
+
+        return result.json();
+    }).then(jsonResult => {
+        return jsonResult;
+    }).catch(err => console.log(err));
 
     return await data;
 }
