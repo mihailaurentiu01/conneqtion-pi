@@ -18,6 +18,10 @@
         </div>
       </div>
 
+      <div v-if="$route.params.message">
+        <b-alert show variant="success"><b-icon icon="exclamation-circle-fill" variant="success"></b-icon> {{$route.params.message}}</b-alert>
+      </div>
+
       <div class="row d-flex justify-content-center mt-5">
         <div class="col-md-12">
          <div>
@@ -64,7 +68,6 @@
             </div>
           </div>
         </div>
-        <button @click="check">check</button>
       </div>
     </div>
 </template>

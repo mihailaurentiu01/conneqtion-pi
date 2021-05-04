@@ -3,20 +3,33 @@ const jwt = require("jsonwebtoken");
 const redisClient = require("../redis_connect");
 const bcrypt = require("bcrypt");
 const cookie = require("cookie");
+const {validationResult} = require("express-validator");
 
-// TODO ADD VALIDATION
 exports.signup = async (req, res, next) => {
+    let errors = validationResult(req);
+    const errorsBack = [];
+
+    if (!errors.isEmpty()){
+        errors.errors.map(error => errorsBack.push(error.msg));
+
+        return res.status(401).json({errors: errorsBack});
+    }
+
     const password = req.body.password;
     const encryptedPassword = await bcrypt.hash(password, +process.env.SALT_ROUNDS);
 
     const user = new User({
         email: req.body.email,
-        password: encryptedPassword
+        password: encryptedPassword,
+        username: req.body.username,
+        fullName: req.body.name,
+        birthDate: req.body.birthDate,
+        location: req.body.location
     });
 
     try{
-        const savedUser = await user.save();
-        res.status(200).json({message: "Created successfully", data: savedUser});
+        await user.save();
+        return res.status(200).json({message: "Created successfully. Now you can log in"});
     } catch(error) {
         if (!error.httpStatusCode){
             error.httpStatusCode = 500;

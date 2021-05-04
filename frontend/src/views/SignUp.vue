@@ -6,7 +6,7 @@
       </div>
     </div>
 
-    <div class="row d-flex justify-content-center mt-5">
+    <div class="row d-flex justify-content-center mt-5 mb-3">
       <div class="col-md-12">
         <div>
           <div class="row d-flex justify-content-center">
@@ -20,10 +20,10 @@
 
           <h2 style="color: white">Existen errores. Corrijalos</h2>
 
-          <div v-for="error in errors">
-            <div class="alert alert-danger">
-              {{error}}
-            </div>
+          <div class="alert alert-danger text-justify">
+            <ul v-for="error in errors">
+              <li> {{error}}</li>
+            </ul>
           </div>
         </div>
 
@@ -53,6 +53,22 @@
               <b-form-group label="Confirm Password *" label-for="confirmPassword" class="text-light" label-align="left">
                 <input type="password" v-model="confirmPassword" class="form-control" id="confirmPassword" placeholder="Confirm password">
               </b-form-group>
+
+              <b-form-checkbox
+                  id="checkbox-1"
+                  v-model="statusTerms"
+                  name="checkbox-1"
+                  class="text-light text-justify my-3"
+              >I accept the <router-link :to="{name: 'terms'}" class="text-light text-underline">terms and use *</router-link>
+              </b-form-checkbox>
+
+              <b-form-checkbox
+                  id="checkbox-2"
+                  v-model="statusPrivacy"
+                  name="checkbox-2"
+                  class="text-light text-justify my-3"
+              >I've read the <router-link :to="{name: 'privacy'}" class="text-light">privacy policy *</router-link>
+              </b-form-checkbox>
               <button type="submit" class="btn text-light btn-success">Sign Up <img style="height: 30px; width: 30px;" src="@/assets/icons/key.png" alt="Key"></button>
             </form>
           </div>
@@ -73,14 +89,12 @@
 </template>
 
 <script>
-import Calendar from 'v-calendar/lib/components/calendar.umd'
 import DatePicker from 'v-calendar/lib/components/date-picker.umd'
-
+import {doSignup} from '../../services/auth.services';
 
 export default {
   name: "SignUp",
   components: {
-    Calendar,
     DatePicker
   },
   data: () => {
@@ -94,7 +108,9 @@ export default {
       confirmPassword: '',
       errors: [],
       signupComplete: false,
-      birthDate: null
+      birthDate: null,
+      statusTerms: false,
+      statusPrivacy: false
     }
   },
   methods: {
@@ -137,7 +153,42 @@ export default {
         this.errors.push("Las contraseñas no coinciden");
       }
 
+      if (!this.statusTerms){
+        this.errors.push("Debe aceptar los términos");
+      }
+
+      if (!this.statusPrivacy){
+        this.errors.push("Debe aceptar la política de privacidad");
+      }
+
       this.signupComplete = this.errors.length === 0;
+
+      if (this.signupComplete){
+        const signupErrors = async (cb) => {
+          let data = await doSignup({
+             email: this.email,
+             password: this.password,
+             confirmPassword: this.confirmPassword,
+             name: this.fullName,
+             username: this.username,
+             birthDate: this.birthDate,
+             location: this.locationSelected,
+             statusTerms: this.statusTerms,
+             statusPrivacy: this.statusPrivacy
+           });
+
+          if (data !== undefined && data.length > 0) {
+            this.errors = data
+            return;
+          }
+
+          cb(data.message);
+        }
+
+        signupErrors(message => {
+          this.$router.push({name: "Login", params: {message}})
+        });
+      }
     },
     getAge(dateString) {
       let today = new Date();

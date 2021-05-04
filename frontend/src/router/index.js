@@ -16,10 +16,12 @@ const routes = [
   },
   {
     path: "/terms",
+    name: "terms",
     component: () => import("@/views/Terms")
   },
   {
     path: "/privacy",
+    name: "privacy",
     component: () => import("@/views/PrivacyPolicy")
   }
 ]
