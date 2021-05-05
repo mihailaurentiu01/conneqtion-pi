@@ -51,7 +51,7 @@ exports.login = async (req, res, next) => {
 
         const passesCheck = await bcrypt.compare(password, user.password);
 
-        if (!passesCheck) return res.status(401).json({data: {message: "Password doesn't match", status: 401}});
+        if (!passesCheck) return res.status(401).json({message: "Password doesn't match", status: 401});
 
         const accessToken = jwt.sign({userId: user._id.toString()}, process.env.JWT_ACCESS_SECRET,
             {expiresIn: process.env.JWT_ACCESS_TIME});
@@ -59,7 +59,7 @@ exports.login = async (req, res, next) => {
         const refreshToken = this.generateRefreshToken(user._id.toString());
 
         res.setHeader("Set-Cookie", cookie.serialize("RefreshToken", refreshToken, {httpOnly: true, path: "/", secure: true, maxAge: +process.env.HTTP_ONLY_COOKIE_MAX_AGE}));
-        res.status(200).json({message: "Login success", data: {accessToken, status: 200}});
+        res.status(200).json({message: "Login success", accessToken, status: 200});
     } catch (error){
         if (!error.httpStatusCode){
             error.httpStatusCode = 500;

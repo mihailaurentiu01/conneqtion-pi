@@ -119,14 +119,14 @@ export default {
         }
 
         fnLogin((data) => {
-          if (data.data.status === 200){
+          if (data.status === 200){
             this.setLoggedIn(true);
-            this.setAccessToken(data.data.accessToken);
+            this.setAccessToken(data.accessToken);
 
             this.$router.push({name: "Index"});
-          }else if (data.data.status === 404){
+          }else if (data.status === 404){
             this.$router.push({name: "Login", params: {error: "No user has been found with the given email"}, query: {email: this.email}});
-          } else if (data.data.status === 401){
+          } else if (data.status === 401){
             this.$router.push({name: "Login", params: {error: "Password doesn't match the given email"}, query: {email: this.email}});
           }
         })

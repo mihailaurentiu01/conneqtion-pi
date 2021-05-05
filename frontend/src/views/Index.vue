@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="text-light">Welcome to the index page</h1>
+    <h1>Welcome to Index</h1>
   </div>
 </template>
 

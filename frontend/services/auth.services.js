@@ -1,6 +1,3 @@
-let {store} = require("../src/store");
-let keyNames = require("../src/keynames");
-
 exports.doSignup = async (user) => {
     let data = fetch("/v1/auth/signup", {
         method: "POST",
