@@ -5,7 +5,12 @@ import SecureLS from 'secure-ls';
 
 Vue.use(VueRouter)
 
+// TODO MIGRATE TO VUEX
 const routes = [
+  {
+    path: "/",
+    redirect: "/auth"
+  },
   {
     path: '/auth',
     component: () => import("@/components/Auth.vue"),
@@ -45,9 +50,9 @@ const routes = [
       let vuex = ls.get("vuex");
 
       if (vuex.length > 0) vuex = JSON.parse(ls.get("vuex"));
-      else next({name: "Login", params: {error: "You must login first"}});
+      else next({to: "/auth", params: {error: "You must login first"}});
 
-      if (!vuex.loggedIn){
+      if (!vuex.loggedIn || !vuex.accessToken){
        return next({name: "Login", params: {error: "You must login first"}})
       }
 

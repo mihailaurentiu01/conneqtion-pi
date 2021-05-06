@@ -1,8 +1,5 @@
 <template>
   <div id="app">
-<!--    <div id="nav">
-      <router-link to="/">Login</router-link> |
-    </div>-->
     <router-view/>
     <footer>
       <cookie-law></cookie-law>
@@ -11,7 +8,9 @@
 </template>
 
 <script>
-  import CookieLaw from 'vue-cookie-law';
+import * as Interceptor from '../services/interceptors/response.interceptor';
+
+import CookieLaw from 'vue-cookie-law';
 
   export default {
     components: {

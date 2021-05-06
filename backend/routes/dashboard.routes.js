@@ -3,6 +3,6 @@ const router = require("express").Router();
 const authMiddlewares = require("../middlewares/auth.middlewares");
 const dashboardController = require("../controllers/dashboard.controller");
 
-router.get("/dashboard", authMiddlewares.verifyToken, dashboardController.index);
+router.get("/search", authMiddlewares.verifyToken, dashboardController.search);
 
 module.exports = router;
