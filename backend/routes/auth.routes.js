@@ -7,6 +7,7 @@ router.post("/signup",[validationMiddlewares.checkEmail, validationMiddlewares.c
 validationMiddlewares.checkFullName, validationMiddlewares.checkUsername, validationMiddlewares.checkBirthDate, validationMiddlewares.checkLocation,
 validationMiddlewares.checkTermsUse, validationMiddlewares.checkPrivacyPolicy], authController.signup);
 
+// TODO ADD MIDDLEWARE VALIDATION FOR LOGIN
 router.post("/login", authController.login);
 router.post("/token", authMiddlewares.verifyRefreshToken, authController.getAccessToken);
 router.get("/logout", authMiddlewares.verifyToken, authController.logout);

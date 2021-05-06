@@ -34,7 +34,7 @@ exports.verifyToken = (req, res, next) => {
 }
 
 exports.verifyRefreshToken = (req, res, next) => {
-    const token = req.body.token;
+    const token = req.cookies["RefreshToken"];
 
     if (!token) return res.status(401).json({message: "Invalid token"});
 

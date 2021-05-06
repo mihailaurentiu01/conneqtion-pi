@@ -100,5 +100,6 @@ exports.getAccessToken = (req, res, next) => {
     const accessToken = jwt.sign({userId: userId}, process.env.JWT_ACCESS_SECRET, {expiresIn: process.env.JWT_ACCESS_TIME});
     const refreshToken = this.generateRefreshToken(userId);
 
-     return res.status(200).json({message: "Successfully re-generated token.", data: {accessToken, refreshToken}});
+    res.setHeader("Set-Cookie", cookie.serialize("RefreshToken", refreshToken, {httpOnly: true, path: "/", secure: true, maxAge: +process.env.HTTP_ONLY_COOKIE_MAX_AGE}));
+    return res.status(200).json({message: "Successfully re-generated token.", data: {accessToken}});
 }
