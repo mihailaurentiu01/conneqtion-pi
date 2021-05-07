@@ -24,6 +24,7 @@ exports.verifyToken = (req, res, next) => {
             next();
         });
     } catch (error) {
+        console.log(error);
         if (!error.httpStatusCode){
             error.httpStatusCode = 401;
             error.message = "Invalid token";

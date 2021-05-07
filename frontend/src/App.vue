@@ -8,7 +8,6 @@
 </template>
 
 <script>
-import * as Interceptor from '../services/interceptors/response.interceptor';
 
 import CookieLaw from 'vue-cookie-law';
 

@@ -1,17 +1,6 @@
 const {store} = require("../src/store");
-const axios = require("axios");
+const Interceptor = require("../services/interceptors/response.interceptor");
 
 exports.search = (query) => {
-
-    axios.get("/v1/user/search?query=" + query, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + store.state.accessToken
-        },
-        credentials: "include",
-        validateStatus: () => true
-    }).then(res=> {
-        // todo do smth w res
-    }).catch(err => {});
+    Interceptor.searchEndpoint("/v1/user/search?query=" + query);
 }

@@ -1,5 +1,16 @@
+const User = require("../models/user.model");
+
 exports.search = (req, res, next) => {
-    console.log(req.cookies);
-    console.log(req.query.query)
-    return res.status(200).json({message: "Welcome to the dashboard"});
+    let query = req.query.query;
+    /*console.log(req.cookies);*/
+
+    const regexSearch = new RegExp(query, 'i');
+    User.find({fullName: {$regex: regexSearch}, '_id': {$ne: req.user.userId}}).then(data => {
+        const friendsFound =  [];
+        data.map(user => {
+            friendsFound.push({fullName: user.fullName, birthDate: user.birthDate, location: user.location, online: user.online})
+        });
+
+        res.status(200).json({friendsFound});
+    }).catch(err => console.log(err));
 }

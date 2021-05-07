@@ -25,6 +25,17 @@ const userModel = new Schema({
     location: {
         type: String,
         required: true
+    },
+    friends: [
+        {userId: {
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    }],
+    online: {
+        type: Boolean,
+        default: false,
+        required: true,
     }
 });
 
