@@ -5,6 +5,7 @@ exports.search = (req, res, next) => {
     /*console.log(req.cookies);*/
 
     const regexSearch = new RegExp(query, 'i');
+
     User.find({fullName: {$regex: regexSearch}, '_id': {$ne: req.user.userId}}).then(data => {
         const friendsFound =  [];
         data.map(user => {
@@ -13,4 +14,8 @@ exports.search = (req, res, next) => {
 
         res.status(200).json({friendsFound});
     }).catch(err => console.log(err));
+}
+
+exports.test = (req, res, next) => {
+    res.status(200).json({message: "SUCCESS"});
 }

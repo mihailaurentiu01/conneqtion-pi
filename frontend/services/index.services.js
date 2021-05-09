@@ -1,6 +1,8 @@
-const {store} = require("../src/store");
-const Interceptor = require("../services/interceptors/response.interceptor");
+const axios = require("axios");
 
 exports.search = (query) => {
-    Interceptor.searchEndpoint("/v1/user/search?query=" + query);
+  axios.get("/v1/user/search?query=" + query).then(res => {
+      console.log("search query completed");
+      console.log(res);
+  }).catch(err => console.log(err));
 }

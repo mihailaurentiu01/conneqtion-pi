@@ -60,6 +60,7 @@ exports.login = async (req, res, next) => {
 
         res.setHeader("Set-Cookie", cookie.serialize("RefreshToken", refreshToken, {httpOnly: true, path: "/", secure: true, maxAge: +process.env.HTTP_ONLY_COOKIE_MAX_AGE}));
         res.status(200).json({message: "Login success", accessToken, status: 200});
+
         user.online = true;
         user.save();
 
