@@ -1,20 +1,32 @@
 <template>
   <div>
-    <navbar></navbar>
+    <navbar @search="search"></navbar>
     <body id="body">
-        <h1>Friends list</h1>
+        <div v-if="friendsResult !== null">
+          <search :friendsResult="friendsResult"></search>
+        </div>
     </body>
   </div>
 </template>
 
 <script>
 import Navbar from "@/components/Navbar";
+import Search from "@/components/Search";
 
 
 export default {
   name: "Index",
-  components: {Navbar},
+  components: {Search, Navbar},
+  data: () => {
+    return {
+      friendsResult: null
+    }
+  },
   methods: {
+    search(item){
+     this.friendsResult = item.friendsFound;
+    // console.log(item)
+    }
   }
 }
 

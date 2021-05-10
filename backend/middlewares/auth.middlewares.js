@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 const redisClient = require("../redis_connect");
+const User = require("../models/user.model");
 
-exports.verifyToken = (req, res, next) => {
+exports.verifyToken = async (req, res, next) => {
     try {
         const token = req.headers.authorization.split(" ")[1];
         const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
@@ -13,9 +14,12 @@ exports.verifyToken = (req, res, next) => {
             return next(error);
         }
 
-        req.user = decoded;
+
         req.token = token;
 
+        let user  = await User.findById(decoded.userId);
+
+        req.user = user;
         redisClient.get("BL_" + decoded.userId.toString(), (err, data) => {
             if (err) throw err;
 

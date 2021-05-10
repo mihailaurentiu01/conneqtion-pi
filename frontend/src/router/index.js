@@ -2,7 +2,6 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import SecureLS from 'secure-ls';
 
-
 Vue.use(VueRouter)
 
 // TODO MIGRATE TO VUEX

@@ -31,7 +31,12 @@ app.use((error, req, res, next) => {
 })
 
 mongoose.connect(process.env.MONGODB_URI).then(value => {
-    app.listen(3000);
+    const server = app.listen(3000);
+    const io = require("./sockets/socket").init(server);
+
+    io.on("connection", socket => {
+        console.log("Client connected");
+    });
 }).catch(error => {
     console.log(error)
 })

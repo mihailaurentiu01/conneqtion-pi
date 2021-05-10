@@ -14,7 +14,7 @@
               <b-form-input v-model="searchQuery" name="searchQuery" size="sm"  placeholder="Search friends, posts..."></b-form-input>
             </div>
             <div class="col-4 col-md-2">
-              <b-button @click="trySearch" size="sm" class="my-sm-0 btn-success" type="submit">Search</b-button>
+              <b-button  @click="trySearch();" size="sm" class="my-sm-0 btn-success" type="submit">Search</b-button>
             </div>
           </div>
 
@@ -66,9 +66,13 @@ export default {
     }
   },
   methods: {
-    trySearch: function(){
-      search(this.searchQuery);
-    }
+    trySearch: async function(){
+      await this.emit('search', await search(this.searchQuery));
+    },
+    emit (eventName, value) {
+        this.$emit(eventName, value)
+        this.$nextTick()
+    },
   }
 }
 </script>
