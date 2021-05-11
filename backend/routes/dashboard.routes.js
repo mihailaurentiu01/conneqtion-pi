@@ -6,4 +6,5 @@ const dashboardController = require("../controllers/dashboard.controller");
 router.get("/search", authMiddlewares.verifyToken, dashboardController.search);
 router.get("/test", authMiddlewares.verifyToken, dashboardController.test);
 router.post("/addFriend", authMiddlewares.verifyToken, dashboardController.addFriend);
+router.get("/pendingFriends", authMiddlewares.verifyToken, dashboardController.pendingFriends)
 module.exports = router;

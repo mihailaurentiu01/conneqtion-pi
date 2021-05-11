@@ -35,8 +35,9 @@ mongoose.connect(process.env.MONGODB_URI).then(value => {
     const io = require("./sockets/socket").init(server);
 
     io.on("connection", socket => {
-        console.log("Client connected");
+       app.set("socket", socket);
     });
+
 }).catch(error => {
     console.log(error)
 })

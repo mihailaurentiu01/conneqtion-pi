@@ -8,6 +8,6 @@ exports.search = async (query) => {
 
 exports.addFriend = async(userId) => {
     return await axios.post("v1/user/addFriend", {userToAddAsFriend: userId}).then(async (res) => {
-        return res.data;
+        return res;
     }).catch(err => console.log(err));
 }

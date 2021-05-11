@@ -1,5 +1,5 @@
 const User = require("../models/user.model");
-const socket = require("../sockets/socket");
+const socketIo = require("../sockets/socket");
 
 exports.search = (req, res, next) => {
     let query = req.query.query;
@@ -24,16 +24,32 @@ exports.test = (req, res, next) => {
 exports.addFriend = (req, res, next) =>{
     const userToAddAsFriend = req.body.userToAddAsFriend;
 
-    // simulate accept
-    User.findById({'_id': userToAddAsFriend}).then(userToAddAsFriend  => {
+    User.findById({'_id': userToAddAsFriend}).then(userToAddAsFriend => {
+        req.user.friends.push({userId: userToAddAsFriend, status: 2});
+
+        userToAddAsFriend.friends.push({userId: req.user, status: 1});
+
+        req.user.save();
+        userToAddAsFriend.save();
+
+        return res.status(200).json({message: "Friend request sent"});
+    }).catch(err => {
+        console.log(err);
+        if (!err.httpStatusCode){
+            err.httpStatusCode = 500;
+            err.message = "Server-Side error. Try again later";
+        }
+
+        next(err);
+    })
+    /*User.findById({'_id': userToAddAsFriend}).then(userToAddAsFriend  => {
         req.user.friends.push(userToAddAsFriend);
         userToAddAsFriend.friends.push(req.user);
 
         req.user.save();
         userToAddAsFriend.save();
 
-        const io = socket.getIo();
-        io.emit("friends", {action: "Added Friend", who: {fullName: userToAddAsFriend.fullName, email: userToAddAsFriend.email}})
+        //const socket =  req.app.get("socket");
 
         return res.status(200).json({message: "Friend added successfully"});
     }).catch(err => {
@@ -44,5 +60,21 @@ exports.addFriend = (req, res, next) =>{
         }
 
         next(err);
+    })*/
+}
+
+exports.pendingFriends = (req, res, next) => {
+    const pendingFriends = [];
+
+    req.user.friends.map(friend => {
+        console.log(friend);
+        if (friend.status === 1){
+            pendingFriends.push(friend);
+        }
     })
+
+    if (pendingFriends.length > 0){
+        const socket =  req.app.get("socket");
+        socket.emit("pending " + req.user._id, {msg: "You have pending friendship requests"})
+    }
 }

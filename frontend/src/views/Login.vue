@@ -94,7 +94,8 @@ export default {
   methods: {
     ...mapMutations({
       setLoggedIn: keyNames.MUTATE_USER_LOGGED_IN,
-      setAccessToken: keyNames.MUTATE_USER_ACCESS_TOKEN
+      setAccessToken: keyNames.MUTATE_USER_ACCESS_TOKEN,
+      setUserId: keyNames.MUTATE_USER_ID
     }),
     check: function(){
       this.errors = [];
@@ -122,6 +123,7 @@ export default {
           if (data.status === 200){
             this.setLoggedIn(true);
             this.setAccessToken(data.accessToken);
+            this.setUserId(data.userId);
 
             this.$router.push({name: "Index"});
           }else if (data.status === 404){

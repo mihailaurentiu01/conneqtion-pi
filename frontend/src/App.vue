@@ -11,7 +11,6 @@
 
 import CookieLaw from 'vue-cookie-law';
 import interceptor from '../services/interceptors/response.interceptor';
-
   export default {
     components: {
       CookieLaw

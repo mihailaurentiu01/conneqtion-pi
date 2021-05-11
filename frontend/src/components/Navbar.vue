@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-navbar id="navbar" toggleable="lg" type="dark" >
-      <b-navbar-brand href="#"><img width="150px" src="../assets/logo.png" alt="Conneqtion logo"></b-navbar-brand>
+      <router-link :to="{name:'Index'}" class="mr-3"><img width="150px" src="../assets/logo.png" alt="Conneqtion logo"></router-link>
 
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
@@ -68,6 +68,7 @@ export default {
   methods: {
     trySearch: async function(){
       await this.emit('search', await search(this.searchQuery));
+      this.emit('query', this.searchQuery);
     },
     emit (eventName, value) {
         this.$emit(eventName, value)

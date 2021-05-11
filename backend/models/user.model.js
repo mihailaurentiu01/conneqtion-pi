@@ -30,6 +30,14 @@ const userModel = new Schema({
         {userId: {
             type: Schema.Types.ObjectId,
             ref: 'User'
+        },
+        status: {
+            type: Number,
+            enums: [
+                1, // Requested
+                2, // Pending
+                3 // Friends
+            ]
         }
     }],
     online: {

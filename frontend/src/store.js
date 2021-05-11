@@ -12,7 +12,9 @@ Vue.use(Vuex);
 export const store =  new Vuex.Store({
     state: {
         loggedIn: false,
-        accessToken: null
+        accessToken: null,
+        userId: null,
+        loading: false
     },
     getters,
     mutations,
