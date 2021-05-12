@@ -18,14 +18,13 @@
             </div>
           </div>
 
-<!--          <div class="row">
+          <div class="row">
             <div class="col-md-12">
-              <div>
-                <b-button size="sm" class="my-sm-0"> <img width="40px" src="../assets/icons/notification(1).png" alt="Notification"></b-button>
-
+              <div class="ml-4">
+                <b-button @click="showNotifications" size="sm" class="my-sm-0 ml-4"> <img width="20px" src="../assets/icons/notification(1).png" alt="Notification"></b-button>
               </div>
             </div>
-          </div>-->
+          </div>
 
           <div class="d-block d-lg-none">
             <b-nav-item-dropdown class="navbar-nav" right>
@@ -52,17 +51,23 @@
         </b-nav-item-dropdown>
       </div>
     </b-navbar>
+
+
+    <notification-center :toggle-value="true"></notification-center>
   </div>
 </template>
 
 <script>
 import {search} from '../../services/index.services';
+import NotificationCenter from "@/components/NotificationCenter";
 
 export default {
   name: "Navbar",
+  components: {NotificationCenter},
   data: () => {
     return {
-      searchQuery: ''
+      searchQuery: '',
+      isToggle: false
     }
   },
   methods: {
@@ -74,6 +79,9 @@ export default {
         this.$emit(eventName, value)
         this.$nextTick()
     },
+    showNotifications(){
+
+    }
   }
 }
 </script>

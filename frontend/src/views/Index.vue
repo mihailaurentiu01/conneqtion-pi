@@ -2,12 +2,12 @@
   <div>
     <navbar @search="search" @query="searchQuery"></navbar>
     <body id="body">
-        <div v-if="friendsResult !== null">
-          <search :friendsResult="friendsResult" :query="query"></search>
+        <div v-if="friendsResult !== null && searchEnabled" >
+          <search :friendsResult="friendsResult" @enableSearch="enableSearch" :query="query"></search>
         </div>
-
-    <button @click="showId">show id</button>
+<!--    <button @click="showId">show id</button>-->
     </body>
+    <router-view/>
   </div>
 </template>
 
@@ -16,35 +16,42 @@ import Navbar from "@/components/Navbar";
 import Search from "@/components/Search";
 import  {mapGetters} from 'vuex';
 import * as keyNames from '../keynames';
-import axios from 'axios';
 import clientSocket from 'socket.io-client';
+import axios from 'axios';
+import NotificationCenter from "@/components/NotificationCenter";
+
 export default {
   name: "Index",
-  components: {Search, Navbar},
+  components: {NotificationCenter, Search, Navbar},
   data: () => {
     return {
       friendsResult: null,
-      query: ''
+      query: '',
+      searchEnabled: true
     }
   },
   methods: {
     search(item){
       if (item === undefined) return;
-     this.friendsResult = item.friendsFound;
+      this.friendsResult = item.friendsFound;
     },
     searchQuery(item){
+      this.searchEnabled = true;
       this.query = item;
     },
+    enableSearch(val){
+      this.searchEnabled = val;
+    },
     showId: function(){
-      console.log(this.getUserId);
 
-     /* axios.get("/v1/user/pendingFriends").then(res => console.log(res)).catch(err => console.log(err));
+
+      axios.get("/v1/user/pendingFriends").then(res => console.log(res)).catch(err => console.log(err));
 
       const socket = clientSocket.connect("localhost:3000");
 
       socket.on("pending " + this.getUserId, data => {
         console.log(data.msg);
-      })*/
+      })
     }
   },
   computed: {
@@ -61,4 +68,7 @@ export default {
   background: white;
   min-height: 92vh;
 }
+
+
+
 </style>

@@ -1,12 +1,9 @@
 <template>
   <div>
     <div class="container">
+      <button class="btn-success p-2 my-4" @click="back"><- Go Back</button>
       <h3>You are searching for '{{query}}'</h3>
       <hr>
-      <div v-if="isLoading">
-        <h2>Loading...</h2>
-      </div>
-      <div v-else>
         <div v-if="friendsResult.length > 0">
           <h2>Results - People</h2>
           <div v-for="(friend, index) in friendsResult">
@@ -30,7 +27,7 @@
                 </div>
 
                 <div class="col-md-4 mt-3 d-none d-md-block">
-                  <button :ref='"btn-pc" + index' @click="tryAddFriend(index)" class="btn-success d-inline">Add friend <img width="20px" src="@/assets/icons/add-user.png" alt="Add friend"></button>
+                  <button :ref='"btn-pc" + index' @click="tryAddFriend(index)" class="btn-success rounded d-inline">Add friend <img width="20px" src="@/assets/icons/add-user.png" alt="Add friend"></button>
                 </div>
 
                 <div class="col-md-6 mt-2 d-block d-md-none">
@@ -46,15 +43,14 @@
           <h2>There are NO results</h2>
         </div>
       </div>
-
     </div>
-  </div>
 </template>
 
 <script>
 import {addFriend} from '../../services/index.services'
 import {mapGetters} from 'vuex';
 import * as keyNames from '../keynames';
+import clientSocket from "socket.io-client";
 
 export default {
   name: "Search",
@@ -76,11 +72,35 @@ export default {
         this.$refs["btn-pc"+index][0].disabled = "disabled";
         this.$refs["btn-phone"+index][0].disabled = "disabled";
       }
-    }
+    },
+    back: function(){
+      this.emit("enableSearch", false);
+    },
+    emit (eventName, value) {
+      this.$emit(eventName, value)
+      this.$nextTick()
+    },
+  },
+  mounted(){
+    const socket = clientSocket.connect("http://localhost:3000");
+
+   socket.on("receivedFriendship " + this.getUserId, data => {
+      const {msg} = data;
+
+      this.$snack.success({
+        text: msg,
+        button: "OK"
+      });
+
+      let index = this.friendsResult.findIndex(f => f.id === data.id);
+      console.log(this.friendsResult[index])
+      this.friendsResult.splice(index, 1);
+
+    });
   },
   computed: {
     ...mapGetters({
-      isLoading: keyNames.GET_LOADING
+      getUserId: keyNames.GET_USER_ID
     })
   },
   props: {

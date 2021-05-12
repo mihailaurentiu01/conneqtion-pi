@@ -15,6 +15,7 @@
     "v-calendar": "^2.3.0",
     "vue": "^2.6.11",
     "vue-axios": "^3.2.4",
+    "vue-click-outside": "^1.1.0",
     "vue-cookie-law": "^1.13.3",
     "vue-router": "^3.2.0",
     "vue-snack": "^0.1.4",

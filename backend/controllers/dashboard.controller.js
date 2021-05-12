@@ -8,10 +8,23 @@ exports.search = (req, res, next) => {
     const regexSearch = new RegExp(query, 'i');
 
     User.find({fullName: {$regex: regexSearch}, '_id': {$ne: req.user._id}}).then(data => {
-        const friendsFound =  [];
+        const friendsFound = [];
+
         data.map(user => {
-            friendsFound.push({fullName: user.fullName, birthDate: user.birthDate, location: user.location, online: user.online, id: user._id});
-        });
+            if (req.user.friends.length > 0){
+                let isFriend = false;
+                for(let i = 0; i < req.user.friends.length; i++) {
+                    if (req.user.friends[i].userId.toString() ===  user._id.toString()) {
+                        isFriend = true;
+                        break;
+                    }
+                }
+
+                if (!isFriend) friendsFound.push({fullName: user.fullName, location: user.location, id: user._id});
+            }else{
+                friendsFound.push({fullName: user.fullName, location: user.location, id: user._id});
+            }
+        })
 
         res.status(200).json({friendsFound});
     }).catch(err => console.log(err));
@@ -30,7 +43,12 @@ exports.addFriend = (req, res, next) =>{
         userToAddAsFriend.friends.push({userId: req.user, status: 1});
 
         req.user.save();
-        userToAddAsFriend.save();
+
+        return userToAddAsFriend.save();
+    }).then(() => {
+        const socket =  req.app.get("socket");
+
+        socket.broadcast.emit("receivedFriendship " + userToAddAsFriend, {msg: "'" + req.user.fullName + "' just sent you a friend request!", id: req.user._id})
 
         return res.status(200).json({message: "Friend request sent"});
     }).catch(err => {
