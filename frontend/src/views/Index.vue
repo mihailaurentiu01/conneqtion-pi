@@ -18,11 +18,10 @@ import  {mapGetters} from 'vuex';
 import * as keyNames from '../keynames';
 import clientSocket from 'socket.io-client';
 import axios from 'axios';
-import NotificationCenter from "@/components/NotificationCenter";
 
 export default {
   name: "Index",
-  components: {NotificationCenter, Search, Navbar},
+  components: {Search, Navbar},
   data: () => {
     return {
       friendsResult: null,
