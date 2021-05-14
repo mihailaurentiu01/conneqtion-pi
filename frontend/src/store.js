@@ -14,7 +14,8 @@ export const store =  new Vuex.Store({
         loggedIn: false,
         accessToken: null,
         userId: null,
-        loading: false
+        loading: false,
+        notifications: []
     },
     getters,
     mutations,

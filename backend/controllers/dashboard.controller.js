@@ -49,6 +49,9 @@ exports.addFriend = (req, res, next) =>{
         const socket =  req.app.get("socket");
 
         socket.broadcast.emit("receivedFriendship " + userToAddAsFriend, {msg: "'" + req.user.fullName + "' just sent you a friend request!", id: req.user._id})
+        socket.broadcast.emit("receivedNotification " + userToAddAsFriend, {userThatSentFriendship: {
+                id: req.user._id, name: req.user.fullName, location: req.user.location
+            }, type: "friendship"})
 
         return res.status(200).json({message: "Friend request sent"});
     }).catch(err => {
@@ -60,25 +63,12 @@ exports.addFriend = (req, res, next) =>{
 
         next(err);
     })
-    /*User.findById({'_id': userToAddAsFriend}).then(userToAddAsFriend  => {
-        req.user.friends.push(userToAddAsFriend);
-        userToAddAsFriend.friends.push(req.user);
+}
 
-        req.user.save();
-        userToAddAsFriend.save();
+exports.friendReqStatus = (req, res, next) => {
+    const {status} = req.body.status;
 
-        //const socket =  req.app.get("socket");
-
-        return res.status(200).json({message: "Friend added successfully"});
-    }).catch(err => {
-        console.log(err);
-        if (!err.httpStatusCode){
-            err.httpStatusCode = 500;
-            err.message = "Server-Side error. Try again later";
-        }
-
-        next(err);
-    })*/
+    res.status(200).json(status);
 }
 
 exports.pendingFriends = (req, res, next) => {

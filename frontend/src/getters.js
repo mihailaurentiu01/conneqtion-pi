@@ -9,5 +9,8 @@ export default {
     },
     [keyNames.GET_LOADING]: state => {
         return state.loading;
+    },
+    [keyNames.GET_NOTIFICATIONS]: state => {
+        return state.notifications;
     }
 }

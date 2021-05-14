@@ -14,7 +14,7 @@
 <script>
 import Navbar from "@/components/Navbar";
 import Search from "@/components/Search";
-import  {mapGetters} from 'vuex';
+import  {mapGetters, mapMutations} from 'vuex';
 import * as keyNames from '../keynames';
 import clientSocket from 'socket.io-client';
 import axios from 'axios';
@@ -51,7 +51,27 @@ export default {
       socket.on("pending " + this.getUserId, data => {
         console.log(data.msg);
       })
-    }
+    },
+    ...mapMutations({
+      addNotification: keyNames.MUTATE_NOTIFICATIONS
+    })
+  },
+  mounted() {
+    const socket = clientSocket.connect("http://localhost:3000");
+
+    socket.on("receivedFriendship " + this.getUserId, data => {
+      const {msg} = data;
+
+      this.$snack.success({
+        text: msg,
+        button: "OK"
+      });
+
+    });
+
+    socket.on("receivedNotification " + this.getUserId, data => {
+      this.addNotification({userThatSentFriendship: data.userThatSentFriendship, type: data.type});
+    })
   },
   computed: {
     ...mapGetters({

@@ -10,19 +10,18 @@
         <b-navbar-nav >
 
           <div class="row">
-            <div class="col-8 col-md-10">
+            <div class="col-8 col-md-7">
               <b-form-input v-model="searchQuery" name="searchQuery" size="sm"  placeholder="Search friends, posts..."></b-form-input>
             </div>
-            <div class="col-4 col-md-2">
+            <div class="col-4 col-md-4">
               <b-button  @click="trySearch();" size="sm" class="my-sm-0 btn-success" type="submit">Search</b-button>
             </div>
           </div>
 
           <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-2">
               <div class="ml-4">
-                <b-button @click="toggle" size="sm" class="my-sm-0 ml-4"> <img width="20px" src="../assets/icons/notification(1).png" alt="Notification"></b-button>
-
+                <b-button @click="toggle" size="sm"  v-bind:class="[{'btn-danger' : notifications.length >0}, 'my-sm-0']"> <img width="20px" src="../assets/icons/notification(1).png" alt="Notification"></b-button>
               </div>
             </div>
           </div>
@@ -61,22 +60,37 @@
           <div id="notifications">
             <h3>Notification Center</h3>
             <div class="container" >
-              <h2>adadasd</h2>
+              <div v-if="notifications.length > 0">
+                <div v-for="notification in notifications">
+                  <div v-if="notification.type === 'friendship'">
+                    <friend-request-notification :notification="notification"></friend-request-notification>
+                  </div>
+                </div>
+              </div>
+              <div v-else>
+                <p>You currently have no notifications</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+<!--    <button @click="checkNotifications">show notif</button>-->
   </div>
 </template>
 
 <script>
 import {search} from '../../services/index.services';
 import ClickOutside from "vue-click-outside";
+import {mapGetters, mapMutations} from 'vuex';
+import * as keyNames from '../keynames';
+import FriendRequestNotification from "@/components/FriendRequestNotification";
+import {store} from "@/store";
 
 export default {
   name: "Navbar",
-  components: {},
+  components: {FriendRequestNotification},
   data: () => {
     return {
       searchQuery: '',
@@ -91,16 +105,28 @@ export default {
     toggle(){
       this.opened = true;
     },
+    checkNotifications(){
+      this.clearNotification([]);
+      console.log(this.notifications.length > 0)
+    },
     hide(){
       this.opened = false;
     },
     emit (eventName, value) {
         this.$emit(eventName, value)
         this.$nextTick()
-    }
+    },
+    ...mapMutations([
+        'clearNotification'
+    ])
   },
   mounted() {
     this.popupItem = this.$el
+  },
+  computed: {
+    ...mapGetters({
+      notifications: keyNames.GET_NOTIFICATIONS
+    })
   },
   directives: {
     ClickOutside

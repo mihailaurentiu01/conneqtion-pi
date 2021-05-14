@@ -71,6 +71,10 @@ export default {
 
         this.$refs["btn-pc"+index][0].disabled = "disabled";
         this.$refs["btn-phone"+index][0].disabled = "disabled";
+
+        // Add notification
+
+
       }
     },
     back: function(){
@@ -93,9 +97,7 @@ export default {
       });
 
       let index = this.friendsResult.findIndex(f => f.id === data.id);
-      console.log(this.friendsResult[index])
       this.friendsResult.splice(index, 1);
-
     });
   },
   computed: {

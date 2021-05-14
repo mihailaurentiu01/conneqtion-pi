@@ -12,5 +12,11 @@ export default {
     },
     [keyNames.MUTATE_LOADING]: (state, value) => {
         state.loading = value;
+    },
+    [keyNames.MUTATE_NOTIFICATIONS]: (state, value) => {
+        state.notifications.push(value);
+    },
+    clearNotification: (state, value) => {
+        state.notifications = value;
     }
 }
