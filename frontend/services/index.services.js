@@ -13,8 +13,8 @@ exports.addFriend = async(userId) => {
     }).catch(err => console.log(err));
 }
 
-exports.friendRequestStatus = async(status) => {
-    return await axios.post("v1/user/friendReqStatus", {status}).then(async(res) => {
+exports.friendRequestStatus = async(data) => {
+    return await axios.post("v1/user/friendReqStatus", {data}).then(async(res) => {
         return res;
     }).catch(err => console.log(err));
 }

@@ -33,7 +33,9 @@
                 <em><img width="40px" src="../assets/icons/user(1).png" alt="User logo"></em>
               </template>
               <b-dropdown-item href="#">Profile</b-dropdown-item>
-              <b-dropdown-item href="#">Sign Out</b-dropdown-item>
+              <b-dropdown-item href="#">
+                <b-button @click="testing">Sign Out</b-button>
+              </b-dropdown-item>
             </b-nav-item-dropdown>
           </div>
 
@@ -48,7 +50,7 @@
             <em><img width="40px" src="../assets/icons/user(1).png" alt="User logo"></em>
           </template>
           <b-dropdown-item href="#">Profile</b-dropdown-item>
-          <b-dropdown-item href="#">Sign Out</b-dropdown-item>
+          <b-dropdown-item @click="logout" href="#">Logout</b-dropdown-item>
         </b-nav-item-dropdown>
       </div>
 
@@ -76,12 +78,13 @@
       </div>
     </div>
 
-<!--    <button @click="checkNotifications">show notif</button>-->
+    <button @click="checkNotifications">remove notif</button>
   </div>
 </template>
 
 <script>
 import {search} from '../../services/index.services';
+import {doLogout} from '../../services/auth.services';
 import ClickOutside from "vue-click-outside";
 import {mapGetters, mapMutations} from 'vuex';
 import * as keyNames from '../keynames';
@@ -105,6 +108,9 @@ export default {
     toggle(){
       this.opened = true;
     },
+    testing(){
+      console.log("works");
+    },
     checkNotifications(){
       this.clearNotification([]);
       console.log(this.notifications.length > 0)
@@ -117,8 +123,17 @@ export default {
         this.$nextTick()
     },
     ...mapMutations([
-        'clearNotification'
-    ])
+        'clearNotification',
+        'reset'
+    ]),
+    async logout() {
+      const res = await doLogout();
+
+      if (res.status === 200){
+        this.reset();
+        await this.$router.push({name: "Login", params: {message: res.data.message}})
+      }
+    }
   },
   mounted() {
     this.popupItem = this.$el

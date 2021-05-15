@@ -1,3 +1,6 @@
+// TODO MIGRATE TO AXIOS
+const axios = require("axios");
+
 exports.doSignup = async (user) => {
     let data = fetch("/v1/auth/signup", {
         method: "POST",
@@ -47,4 +50,10 @@ exports.doLogin = async (user) => {
     }).catch(err => console.log(err));
 
     return await data;
+}
+
+exports.doLogout = async () => {
+    return await axios.get("v1/auth/logout").then(async (res) => {
+        return res;
+    }).catch(err => console.log(err));
 }

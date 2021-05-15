@@ -87,7 +87,7 @@ exports.generateRefreshToken = (userId) => {
 }
 
 exports.logout = async (req, res, next) => {
-    const userId = req.user.userId;
+    const userId = req.user._id;
 
     // Delete refresh token for given user id
     await redisClient.del(userId.toString());

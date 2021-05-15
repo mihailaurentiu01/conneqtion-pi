@@ -25,6 +25,7 @@
 
 <script>
 import {friendRequestStatus} from '../../services/index.services';
+import {mapMutations} from 'vuex';
 
 export default {
 name: "FriendRequestNotification",
@@ -35,9 +36,19 @@ name: "FriendRequestNotification",
   },
   methods: {
     handleFriendRequest: async function(status){
-        const res = await  friendRequestStatus(status);
-        console.log(res);
-    }
+        const {id} = this.notification.userThatSentFriendship;
+        const res = await friendRequestStatus({status, userToBeFriendTo: id});
+
+        if (res.status === 200){
+          this.$snack.success({
+            text: res.data.msg,
+            button: "OK"
+          });
+
+          this.removeNotification(res.data.userId);
+        }
+    },
+    ...mapMutations(['removeNotification'])
   },
   props: {
     notification: {

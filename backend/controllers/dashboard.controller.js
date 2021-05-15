@@ -66,9 +66,57 @@ exports.addFriend = (req, res, next) =>{
 }
 
 exports.friendReqStatus = (req, res, next) => {
-    const {status} = req.body.status;
+    const {data} = req.body;
+    const {status} = data;
+    const {userToBeFriendTo} = data;
 
-    res.status(200).json(status);
+    let usertoBeFriend;
+    User.findById(userToBeFriendTo).then(userToBeFriend => {
+      usertoBeFriend = userToBeFriend;
+      const userFriendshipRequested = req.user.friends.findIndex(friend => {
+          return friend.userId.toString() === userToBeFriendTo.toString()
+      });
+
+      const userFriendshipPending = userToBeFriend.friends.findIndex(friend => {
+          return friend.userId.toString() === req.user._id.toString();
+      });
+
+      // If friend request is accepted
+      if (status){
+          req.user.friends[userFriendshipRequested].status = 3;
+          userToBeFriend.friends[userFriendshipPending].status = 3;
+      }else{
+          req.user.friends.splice(userFriendshipRequested, 1);
+          userToBeFriend.friends.splice(userFriendshipPending, 1)
+      }
+
+      req.user.save();
+      userToBeFriend.save()
+
+      return status;
+    }).then(friendshipStatus => {
+        const socket =  req.app.get("socket");
+
+        // Notificate the user that sent the friend request if online via socket
+        if (friendshipStatus){
+            socket.broadcast.emit("friendThatRequested " + usertoBeFriend._id, {msg: req.user.fullName + " has accepted your friend request!" });
+
+            return res.status(200).json({friendship: true, msg: "Now you are friend with " + usertoBeFriend.fullName, userId: usertoBeFriend._id})
+        }
+
+        socket.broadcast.emit("friendThatRequested " + usertoBeFriend._id, {msg: req.user.fullName + " has refused your friend request!" });
+        return res.status(200).json({friendship: false, msg: "You refused a friendship with " + usertoBeFriend.fullName, userId: usertoBeFriend._id});
+    })
+        .catch(err => {
+        console.log(err);
+        if (!err.httpStatusCode){
+            err.httpStatusCode = 500;
+            err.message = "Server-Side error. Try again later";
+        }
+
+        next(err);
+    })
+
 }
 
 exports.pendingFriends = (req, res, next) => {

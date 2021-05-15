@@ -54,7 +54,10 @@ export default {
     },
     ...mapMutations({
       addNotification: keyNames.MUTATE_NOTIFICATIONS
-    })
+    }),
+    ...mapMutations([
+        'removeNotification'
+    ])
   },
   mounted() {
     const socket = clientSocket.connect("http://localhost:3000");
@@ -71,6 +74,15 @@ export default {
 
     socket.on("receivedNotification " + this.getUserId, data => {
       this.addNotification({userThatSentFriendship: data.userThatSentFriendship, type: data.type});
+    });
+
+    socket.on("friendThatRequested " + this.getUserId, data => {
+      this.$snack.success({
+        text: data.msg,
+        button: "OK"
+      });
+
+      this.removeNotification(data.userId)
     })
   },
   computed: {
