@@ -2,6 +2,7 @@
   <div>
       <div>
         <div class="row p-2">
+          <p>Friend request</p>
           <div class="col-md-2">
             <img width="50px" src="@/assets/icons/user(1).png" alt="User profile image">
           </div>
@@ -37,7 +38,13 @@ name: "FriendRequestNotification",
   methods: {
     handleFriendRequest: async function(status){
         const {id} = this.notification.userThatSentFriendship;
-        const res = await friendRequestStatus({status, userToBeFriendTo: id});
+        const dataToBeSent = {status, userToBeFriendTo: id};
+
+        if (this.notification.notificationId){
+          dataToBeSent.notificationId = this.notification.notificationId;
+        }
+
+        const res = await friendRequestStatus(dataToBeSent);
 
         if (res.status === 200){
           this.$snack.success({

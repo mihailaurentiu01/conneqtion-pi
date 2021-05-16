@@ -88,6 +88,21 @@ exports.generateRefreshToken = (userId) => {
 
 exports.logout = async (req, res, next) => {
     const userId = req.user._id;
+    req.user.online = false;
+    const {notifications} = req.body;
+
+    // check notifications
+    if (notifications.length > 0){
+        let notif = notifications.map(notification => {
+            if (notification.type === "friendship"){
+                return {notification: {userThatSentFriendship: notification.userThatSentFriendship}, type: notification.type}
+            }
+        });
+
+        notif.map(noti => {
+            req.user.notifications.push(noti);
+        });
+    }
 
     // Delete refresh token for given user id
     await redisClient.del(userId.toString());
@@ -95,6 +110,7 @@ exports.logout = async (req, res, next) => {
     // Blacklist access token
     await redisClient.set("BL_" + userId.toString(), req.token);
 
+    req.user.save();
     return res.status(200).json({message: "Successfully logged out"})
 }
 

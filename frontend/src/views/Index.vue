@@ -18,6 +18,7 @@ import  {mapGetters, mapMutations} from 'vuex';
 import * as keyNames from '../keynames';
 import clientSocket from 'socket.io-client';
 import axios from 'axios';
+import {pendingNotifications} from '../../services/index.services';
 
 export default {
   name: "Index",
@@ -40,17 +41,6 @@ export default {
     },
     enableSearch(val){
       this.searchEnabled = val;
-    },
-    showId: function(){
-
-
-      axios.get("/v1/user/pendingFriends").then(res => console.log(res)).catch(err => console.log(err));
-
-      const socket = clientSocket.connect("localhost:3000");
-
-      socket.on("pending " + this.getUserId, data => {
-        console.log(data.msg);
-      })
     },
     ...mapMutations({
       addNotification: keyNames.MUTATE_NOTIFICATIONS
@@ -77,6 +67,7 @@ export default {
     });
 
     socket.on("friendThatRequested " + this.getUserId, data => {
+
       this.$snack.success({
         text: data.msg,
         button: "OK"
@@ -84,6 +75,26 @@ export default {
 
       this.removeNotification(data.userId)
     })
+  },
+  beforeMount: async function() {
+    const pendingNotif = await pendingNotifications();
+    const {notifications} = pendingNotif.data;
+
+    if (notifications.length >  0){
+      notifications.map(notification => {
+        //friendThatRequested
+        if (notification.type === "friendship"){
+          this.addNotification({notificationId: notification._id, userThatSentFriendship: notification.notification.userThatSentFriendship, type: notification.type});
+        }else if (notification.type === "friendshipStatus"){
+          this.addNotification({notificationId: notification._id, msg: notification.notification.msg, userId: notification.notification.id, type: notification.type});
+        }
+      });
+
+      this.$snack.success({
+        text: "You have pending notifications",
+        button: "OK"
+      });
+    }
   },
   computed: {
     ...mapGetters({

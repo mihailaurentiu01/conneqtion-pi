@@ -67,6 +67,9 @@
                   <div v-if="notification.type === 'friendship'">
                     <friend-request-notification :notification="notification"></friend-request-notification>
                   </div>
+                  <div v-else-if="notification.type === 'friendshipStatus'">
+                    <friend-request-status :notification="notification"></friend-request-status>
+                  </div>
                 </div>
               </div>
               <div v-else>
@@ -90,10 +93,11 @@ import {mapGetters, mapMutations} from 'vuex';
 import * as keyNames from '../keynames';
 import FriendRequestNotification from "@/components/FriendRequestNotification";
 import {store} from "@/store";
+import FriendRequestStatus from "@/components/FriendRequestStatus";
 
 export default {
   name: "Navbar",
-  components: {FriendRequestNotification},
+  components: {FriendRequestStatus, FriendRequestNotification},
   data: () => {
     return {
       searchQuery: '',
@@ -113,7 +117,7 @@ export default {
     },
     checkNotifications(){
       this.clearNotification([]);
-      console.log(this.notifications.length > 0)
+      console.log(this.notifications)
     },
     hide(){
       this.opened = false;
@@ -127,7 +131,7 @@ export default {
         'reset'
     ]),
     async logout() {
-      const res = await doLogout();
+      const res = await doLogout(this.notifications);
 
       if (res.status === 200){
         this.reset();

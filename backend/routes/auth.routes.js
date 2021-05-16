@@ -10,6 +10,6 @@ validationMiddlewares.checkTermsUse, validationMiddlewares.checkPrivacyPolicy], 
 // TODO ADD MIDDLEWARE VALIDATION FOR LOGIN
 router.post("/login", authController.login);
 router.post("/token", authMiddlewares.verifyRefreshToken, authController.getAccessToken);
-router.get("/logout", authMiddlewares.verifyToken, authController.logout);
+router.post("/logout", authMiddlewares.verifyToken, authController.logout);
 
 module.exports = router;

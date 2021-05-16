@@ -18,3 +18,15 @@ exports.friendRequestStatus = async(data) => {
         return res;
     }).catch(err => console.log(err));
 }
+
+exports.pendingNotifications = async () => {
+    return await axios.get("v1/user/pendingNotifications").then(async (res) => {
+        return res;
+    }).catch(err => console.log(err));
+}
+
+exports.statusAccept = async (notificationId) => {
+    return await axios.post("v1/user/statusAccept", {notificationId}).then(async (res) => {
+        return res;
+    }).catch(err => console.log(err));
+}

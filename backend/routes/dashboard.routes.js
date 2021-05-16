@@ -8,4 +8,6 @@ router.get("/test", authMiddlewares.verifyToken, dashboardController.test);
 router.post("/addFriend", authMiddlewares.verifyToken, dashboardController.addFriend);
 router.get("/pendingFriends", authMiddlewares.verifyToken, dashboardController.pendingFriends);
 router.post("/friendReqStatus", authMiddlewares.verifyToken, dashboardController.friendReqStatus);
+router.get("/pendingNotifications", authMiddlewares.verifyToken, dashboardController.pendingNotifications);
+router.post("/statusAccept", authMiddlewares.verifyToken, dashboardController.statusAccept);
 module.exports = router;

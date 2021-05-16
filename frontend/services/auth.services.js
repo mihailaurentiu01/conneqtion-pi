@@ -52,8 +52,8 @@ exports.doLogin = async (user) => {
     return await data;
 }
 
-exports.doLogout = async () => {
-    return await axios.get("v1/auth/logout").then(async (res) => {
+exports.doLogout = async (notifications) => {
+    return await axios.post("v1/auth/logout", {notifications}).then(async (res) => {
         return res;
     }).catch(err => console.log(err));
 }

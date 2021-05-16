@@ -44,7 +44,15 @@ const userModel = new Schema({
         type: Boolean,
         default: false,
         required: true,
-    }
+    },
+    notifications: [{
+        notification: {
+            type: Object
+        },
+        type:{
+            type: String
+        }
+    }]
 });
 
 module.exports = mongoose.model("User", userModel);

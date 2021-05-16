@@ -37,7 +37,12 @@ exports.test = (req, res, next) => {
 exports.addFriend = (req, res, next) =>{
     const userToAddAsFriend = req.body.userToAddAsFriend;
 
+    let usertoaddasfriend;
+
+    // confusing name. might consider changing it
     User.findById({'_id': userToAddAsFriend}).then(userToAddAsFriend => {
+        usertoaddasfriend= userToAddAsFriend;
+
         req.user.friends.push({userId: userToAddAsFriend, status: 2});
 
         userToAddAsFriend.friends.push({userId: req.user, status: 1});
@@ -48,10 +53,23 @@ exports.addFriend = (req, res, next) =>{
     }).then(() => {
         const socket =  req.app.get("socket");
 
-        socket.broadcast.emit("receivedFriendship " + userToAddAsFriend, {msg: "'" + req.user.fullName + "' just sent you a friend request!", id: req.user._id})
-        socket.broadcast.emit("receivedNotification " + userToAddAsFriend, {userThatSentFriendship: {
-                id: req.user._id, name: req.user.fullName, location: req.user.location
-            }, type: "friendship"})
+        // CHECK IF THE USER IS ONLINE if not stack the notification
+        if (!usertoaddasfriend.online){
+            usertoaddasfriend.notifications.push({notification: {
+                    userThatSentFriendship: {
+                        id:  req.user._id,
+                        name: req.user.fullName,
+                        location: req.user.location
+                    },
+                    type: "friendship"
+                }});
+            usertoaddasfriend.save();
+        }else{
+            socket.broadcast.emit("receivedFriendship " + userToAddAsFriend, {msg: "'" + req.user.fullName + "' just sent you a friend request!", id: req.user._id})
+            socket.broadcast.emit("receivedNotification " + userToAddAsFriend, {userThatSentFriendship: {
+                    id: req.user._id, name: req.user.fullName, location: req.user.location
+                }, type: "friendship"})
+        }
 
         return res.status(200).json({message: "Friend request sent"});
     }).catch(err => {
@@ -69,6 +87,7 @@ exports.friendReqStatus = (req, res, next) => {
     const {data} = req.body;
     const {status} = data;
     const {userToBeFriendTo} = data;
+    const {notificationId} = data;
 
     let usertoBeFriend;
     User.findById(userToBeFriendTo).then(userToBeFriend => {
@@ -90,6 +109,15 @@ exports.friendReqStatus = (req, res, next) => {
           userToBeFriend.friends.splice(userFriendshipPending, 1)
       }
 
+      //notification remove
+      if (notificationId){
+          let notificationIndex = req.user.notifications.findIndex(notification => {
+              return notification._id.toString() === notificationId.toString();
+          })
+
+          req.user.notifications.splice(notificationIndex, 1);
+      }
+
       req.user.save();
       userToBeFriend.save()
 
@@ -98,13 +126,37 @@ exports.friendReqStatus = (req, res, next) => {
         const socket =  req.app.get("socket");
 
         // Notificate the user that sent the friend request if online via socket
+
         if (friendshipStatus){
-            socket.broadcast.emit("friendThatRequested " + usertoBeFriend._id, {msg: req.user.fullName + " has accepted your friend request!" });
+            // notifiy the user that sent the request
+            // usertoBeFriend is the user that gets notified whether its request of friendship was accepted or not
+
+            if (usertoBeFriend.online){
+                socket.broadcast.emit("friendThatRequested " + usertoBeFriend._id, {msg: req.user.fullName + " has accepted your friend request!",
+                });
+            }else{
+                usertoBeFriend.notifications.push({notification: {
+                    msg: req.user.fullName + " has accepted your friend request!",
+                    id: req.user._id + "status"
+                }, type: "friendshipStatus"});
+
+                usertoBeFriend.save();
+            }
 
             return res.status(200).json({friendship: true, msg: "Now you are friend with " + usertoBeFriend.fullName, userId: usertoBeFriend._id})
         }
 
-        socket.broadcast.emit("friendThatRequested " + usertoBeFriend._id, {msg: req.user.fullName + " has refused your friend request!" });
+        if (!usertoBeFriend.online){
+            usertoBeFriend.notifications.push({notification: {
+                    msg: req.user.fullName + " has refused your friend request!",
+                    id: req.user._id + "status"
+                }, type: "friendshipStatus"});
+
+            usertoBeFriend.save();
+        }else{
+            socket.broadcast.emit("friendThatRequested " + usertoBeFriend._id, {msg: req.user.fullName + " has refused your friend request!", });
+        }
+
         return res.status(200).json({friendship: false, msg: "You refused a friendship with " + usertoBeFriend.fullName, userId: usertoBeFriend._id});
     })
         .catch(err => {
@@ -133,4 +185,21 @@ exports.pendingFriends = (req, res, next) => {
         const socket =  req.app.get("socket");
         socket.emit("pending " + req.user._id, {msg: "You have pending friendship requests"})
     }
+}
+
+exports.statusAccept = (req, res, next) => {
+    const {notificationId} = req.body;
+
+    let index = req.user.notifications.findIndex(notification => {
+        return notification._id.toString() === notificationId;
+    })
+
+    req.user.notifications.splice(index, 1);
+    req.user.save();
+
+    return res.status(200).json({msg: "Notification erased"});
+}
+
+exports.pendingNotifications = (req, res, next) => {
+    res.status(200).json({notifications: req.user.notifications});
 }

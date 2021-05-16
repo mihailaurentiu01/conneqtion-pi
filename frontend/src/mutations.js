@@ -14,15 +14,28 @@ export default {
         state.loading = value;
     },
     [keyNames.MUTATE_NOTIFICATIONS]: (state, value) => {
-        state.notifications.push(value);
+        if (state.notifications.length  > 0){
+            state.notifications.map(notification => {
+                if (notification.notificationId === value.notificationId && notification.notificationId !== undefined && value.notificationId !== undefined) return;
+
+                state.notifications.push(value);
+            })
+        }else{
+            state.notifications.push(value);
+        }
     },
     clearNotification: (state, value) => {
         state.notifications = value;
     },
     removeNotification: (state, userId) => {
         const index = state.notifications.findIndex(notification => {
-            return notification.userThatSentFriendship.id.toString() === userId.toString();
-        })
+            if (notification.type === "friendship"){
+                return notification.userThatSentFriendship.id.toString() === userId.toString();
+            } else if (notification.type === "friendshipStatus"){
+                return notification.userId === userId;
+            }
+        });
+
         state.notifications.splice(index, 1);
     },
     reset: (state) => {
