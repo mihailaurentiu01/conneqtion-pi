@@ -1,10 +1,10 @@
 <template>
   <div>
-    <navbar @search="search" @query="searchQuery"></navbar>
+<!--    <navbar @search="search" @query="searchQuery"></navbar>-->
     <body id="body">
-        <div v-if="friendsResult !== null && searchEnabled" >
+<!--        <div v-if="friendsResult !== null && searchEnabled" >
           <search :friendsResult="friendsResult" @enableSearch="enableSearch" :query="query"></search>
-        </div>
+        </div>-->
 <!--    <button @click="showId">show id</button>-->
     </body>
     <router-view/>
@@ -110,7 +110,4 @@ export default {
   background: white;
   min-height: 92vh;
 }
-
-
-
 </style>

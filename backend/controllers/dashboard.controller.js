@@ -13,6 +13,7 @@ exports.search = (req, res, next) => {
         data.map(user => {
             if (req.user.friends.length > 0){
                 let isFriend = false;
+
                 for(let i = 0; i < req.user.friends.length; i++) {
                     if (req.user.friends[i].userId.toString() ===  user._id.toString()) {
                         isFriend = true;

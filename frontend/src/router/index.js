@@ -56,7 +56,15 @@ const routes = [
       }
 
       next();
-    }
+    },
+  },
+  {
+    path: "/posts",
+    children: [
+      {path: "", name: "Posts", component: () => import("@/views/ViewPosts")},
+      {path: "add", name: "AddPost", component: () => import("@/views/AddPost")}
+    ],
+    component: () => import("@/views/Posts")
   }
 ]
 

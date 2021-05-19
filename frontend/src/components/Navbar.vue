@@ -24,6 +24,9 @@
                 <b-button @click="toggle" size="sm"  v-bind:class="[{'btn-danger' : notifications.length >0}, 'my-sm-0']"> <img width="20px" src="../assets/icons/notification(1).png" alt="Notification"></b-button>
               </div>
             </div>
+            <div class="col-md-4 ml-4">
+              <router-link class="btn-success p-2 ml-3" :to="{name: 'Posts'}">Posts</router-link>
+            </div>
           </div>
 
           <div class="d-block d-lg-none">
@@ -33,8 +36,8 @@
                 <em><img width="40px" src="../assets/icons/user(1).png" alt="User logo"></em>
               </template>
               <b-dropdown-item href="#">Profile</b-dropdown-item>
-              <b-dropdown-item href="#">
-                <b-button @click="testing">Sign Out</b-button>
+              <b-dropdown-item @click="logout" href="#">
+                Logout
               </b-dropdown-item>
             </b-nav-item-dropdown>
           </div>
