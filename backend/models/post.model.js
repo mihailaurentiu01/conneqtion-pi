@@ -15,10 +15,13 @@ const postModel = new Schema({
         type: String,
         required: true
     },
-    likesAmount: {
-        type: Number,
-        required: true
-    },
+    likes: [{
+        user: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: "User"
+        }
+    }],
     comments: {
         type: Array
     },
@@ -26,6 +29,6 @@ const postModel = new Schema({
         type: Boolean,
         required: true
     }
-});
+},   { timestamps: true });
 
 module.exports = mongoose.model("Post", postModel);

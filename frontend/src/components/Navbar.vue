@@ -60,7 +60,7 @@
     </b-navbar>
 
     <div  v-click-outside="hide">
-      <div class="col-8"  v-show="opened">
+      <div class="col-8" style="z-index: 1" v-show="opened">
         <div id="noti_Container" class="container">
           <div id="notifications">
             <h3>Notification Center</h3>

@@ -34,6 +34,11 @@
                       name="description"
                       max-rows="6"
                   ></b-form-textarea>
+                  <b-form-checkbox
+                      id="input-3"
+                      name="public"
+                      v-model="form.public"
+                  >Public</b-form-checkbox>
                 </b-form-group>
 
                 <b-button type="submit" variant="primary">Submit</b-button>
@@ -44,20 +49,23 @@
 </template>
 
 <script>
+import {addPost} from '../../services/post.services';
+
 export default {
   name: "AddPost",
   data: () => {
     return {
       form: {
         title: '',
-        description: ''
+        description: '',
+        public: false
       },
       errors: [],
       canSend: false
     }
   },
   methods: {
-    addPost: function(){
+    addPost: async function(){
       this.errors = [];
 
       if (this.form.title.length < 1){
@@ -71,7 +79,11 @@ export default {
       if (this.errors.length === 0) this.canSend = true;
 
       if (this.canSend){
-        // make request
+        const res = await addPost({title: this.form.title, description: this.form.description, public: this.form.public});
+
+        if (res.status === 200){
+          await this.$router.push({name: 'Posts', params: {msg: res.data.msg}})
+        }
       }
     }
   }

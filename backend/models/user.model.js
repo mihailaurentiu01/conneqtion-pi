@@ -52,7 +52,14 @@ const userModel = new Schema({
         type:{
             type: String
         }
-    }]
-});
+    }],
+    posts: [
+        {post: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: 'Post'
+        }}
+    ]
+},  { timestamps: true });
 
 module.exports = mongoose.model("User", userModel);

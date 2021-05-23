@@ -7,6 +7,7 @@ const cors = require("cors");
 
 const authRoutes = require("./routes/auth.routes");
 const dashboardRoutes = require("./routes/dashboard.routes");
+const postRoutes = require("./routes/posts.routes");
 
 // Accept json body
 app.use(express.json());
@@ -21,6 +22,7 @@ app.use(cookieParser());
 // ----ROUTES----
 app.use("/v1/auth", authRoutes);
 app.use("/v1/user", dashboardRoutes);
+app.use("/v1/post", postRoutes);
 
 // Errors Handler
 app.use((error, req, res, next) => {

@@ -96,7 +96,7 @@ exports.checkPrivacyPolicy = body("statusPrivacy").custom(value => {
 
 
 // Posts validation
-exports.checkTitle = body("title").custom(value => {
+exports.checkTitle = body("post.title").custom(value => {
     if (value.length < 1){
         return Promise.reject("Length of title must be greater than 0");
     }
@@ -104,7 +104,7 @@ exports.checkTitle = body("title").custom(value => {
     return true;
 })
 
-exports.checkDescription = body("description").custom(value => {
+exports.checkDescription = body("post.description").custom(value => {
     if (value.length < 1){
         return Promise.reject("Length of description must be greater than 0");
     }

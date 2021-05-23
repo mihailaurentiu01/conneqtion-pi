@@ -6,6 +6,9 @@ const {checkTitle, checkDescription} = require("../middlewares/validation.middle
 
 
 router.post("/add", [authMiddlewares.verifyToken, checkTitle], postsController.add);
+router.get("/all", authMiddlewares.verifyToken, postsController.getAll);
+router.get("/friendsPosts", authMiddlewares.verifyToken, postsController.getFriendsPosts);
+router.post("/update", authMiddlewares.verifyToken, postsController.update);
+router.post("/delete", authMiddlewares.verifyToken, postsController.delete);
+
 module.exports = router;
-
-

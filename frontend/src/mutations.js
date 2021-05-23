@@ -38,6 +38,13 @@ export default {
 
         state.notifications.splice(index, 1);
     },
+    removeNotificationById: (state, notificationId) => {
+         const index = state.notifications.findIndex(notification => {
+             return notification.notificationId === notificationId;
+         });
+
+         state.notifications.splice(index, 1);
+    },
     reset: (state) => {
         state.loggedIn = false;
         state.accessToken = null

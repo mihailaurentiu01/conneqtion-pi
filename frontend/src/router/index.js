@@ -62,7 +62,8 @@ const routes = [
     path: "/posts",
     children: [
       {path: "", name: "Posts", component: () => import("@/views/ViewPosts")},
-      {path: "add", name: "AddPost", component: () => import("@/views/AddPost")}
+      {path: "add", name: "AddPost", component: () => import("@/views/AddPost")},
+      {path: "edit/:id", name: "EditPost", component: () => import("@/views/EditPost")}
     ],
     component: () => import("@/views/Posts")
   }

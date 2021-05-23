@@ -1,5 +1,4 @@
 const User = require("../models/user.model");
-const socketIo = require("../sockets/socket");
 
 exports.search = (req, res, next) => {
     let query = req.query.query;
@@ -202,5 +201,5 @@ exports.statusAccept = (req, res, next) => {
 }
 
 exports.pendingNotifications = (req, res, next) => {
-    res.status(200).json({notifications: req.user.notifications});
+    return res.status(200).json({notifications: req.user.notifications});
 }
