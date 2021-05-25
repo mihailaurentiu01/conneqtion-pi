@@ -29,3 +29,21 @@ exports.deletePost = async (postId) => {
         return res;
     }).catch(err => console.log(err));
 }
+
+exports.likePost = async (postId, userId, index) => {
+    return await axios.post("/v1/post/like", {postId, userId, index}).then(async (res) => {
+        return res;
+    }).catch(err => console.log(err));
+}
+
+exports.addComment = async (postId, comment) => {
+    return await axios.post("/v1/post/addComment", {postId, comment}).then(async (res) => {
+        return res;
+    }).catch(err => console.log(err));
+}
+
+exports.deleteComment = async (postId, commentId, index) => {
+    return await axios.post("/v1/post/deleteComment", {postId, commentId, index}).then(async (res) => {
+        return res;
+    }).catch(err => console.log(err));
+}

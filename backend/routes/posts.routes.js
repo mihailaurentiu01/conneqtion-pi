@@ -10,5 +10,8 @@ router.get("/all", authMiddlewares.verifyToken, postsController.getAll);
 router.get("/friendsPosts", authMiddlewares.verifyToken, postsController.getFriendsPosts);
 router.post("/update", authMiddlewares.verifyToken, postsController.update);
 router.post("/delete", authMiddlewares.verifyToken, postsController.delete);
+router.post("/like", authMiddlewares.verifyToken, postsController.postLike);
+router.post("/addComment", authMiddlewares.verifyToken, postsController.addComment);
+router.post("/deleteComment", authMiddlewares.verifyToken, postsController.deleteComment);
 
 module.exports = router;

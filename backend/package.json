@@ -19,6 +19,7 @@
     "express-validator": "^6.10.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.5",
+    "mongoose-aggregate-paginate-v2": "^1.0.42",
     "redis": "^3.1.2",
     "socket.io": "^4.0.2"
   },

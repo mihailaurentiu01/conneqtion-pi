@@ -40,10 +40,6 @@ exports.add = (req, res, next) => {
 
                 socket.broadcast.emit("friendAddedNewPost " + friend.userId._id, {post: postData});
             })
-          /*  friends.map(friend => {
-                socket.broadcast.emit("friendAddedNewPost " + friend._id, {msg: "yep"});
-                //{notificationId: notification._id, msg: notification.notification.msg, userId: notification.notification.id, type: notification.notification.type}
-            })*/
         })
 
     }).catch(err => {
@@ -111,6 +107,33 @@ async function checkFriendPosts(friend){
 
 exports.postLike = (req, res, next) => {
     const {postId} = req.body;
+    const {userId} = req.body;
+    const {index} = req.body;
+
+    let alreadyLiked = false;
+
+    Post.findById(postId).then(post => {
+        if (post.likes.length  > 0){
+            post.likes.map(like => {
+                if (like.user.toString() !== userId.toString()){
+                    post.likes.push({user: userId});
+                } else{
+                    alreadyLiked = true;
+
+                    if (alreadyLiked){
+                        const index = post.likes.findIndex(like => like.user.toString() === userId.toString());
+                        post.likes.splice(index, 1);
+                    }
+                }
+            });
+        }else{
+            post.likes.push({user: userId})
+        }
+
+        post.save();
+
+        res.status(200).json({alreadyLiked: alreadyLiked, index: index});
+    }).catch(err => console.log(err))
 }
 
 exports.update = (req, res, next) => {
@@ -118,7 +141,6 @@ exports.update = (req, res, next) => {
 
     let postfound;
     Post.findById(post._id).then(postFound => {
-
         postFound.title = post.title;
         postFound.description = post.description;
         postFound.public = post.public;
@@ -169,10 +191,76 @@ exports.delete = (req, res, next) => {
             user.friends.map(async (friend) => {
                 socket.broadcast.emit("friendDeletedPost " + friend.userId._id, {index: index, friend: req.user.fullName});
             })
-        })
+        }).catch(err => console.log(err));
 
         await Post.findOneAndDelete({'_id': postId});
 
         return res.status(200).json({posts: posts, user: req.user.fullName, msg: "Post deleted successfully!", index: index});
+    }).catch(err => {
+        console.log(err);
+        if (!err.httpStatusCode){
+            err.httpStatusCode = 500;
+            err.message = "Server-Side error. Try again later";
+        }
+
+        next(err);
     });
+}
+
+exports.addComment = (req, res, next) => {
+    const {postId} = req.body;
+    const {comment} = req.body;
+
+    let usrComment = {user: req.user._id, comment: comment, date: new Date()};
+
+    Post.findById(postId).then(post => {
+
+        post.comments.push({userId: usrComment.user, comment: usrComment.comment, date: usrComment.date, username: req.user.fullName});
+        return post.save();
+    }).then(savedPost => {
+        const comId = savedPost.comments[savedPost.comments.length-1]._id;
+
+        return res.status(200).json({comment: {
+                comment: usrComment.comment,
+                date: usrComment.date,
+                postId: postId,
+                userId: req.user._id,
+                username: req.user.fullName,
+                _id: comId
+            }});
+    })
+        .catch(err => {
+        console.log(err);
+        if (!err.httpStatusCode){
+            err.httpStatusCode = 500;
+            err.message = "Server-Side error. Try again later";
+        }
+
+        next(err);
+    })
+}
+
+exports.deleteComment = (req, res, next) => {
+    const {postId} = req.body;
+    const {commentId} = req.body;
+    const {index} = req.body;
+
+    Post.findById(postId).then(post => {
+        const commentIndex = post.comments.findIndex(comment => {
+            return comment._id.toString() === commentId.toString();
+        })
+
+        post.comments.splice(commentIndex, 1);
+        post.save();
+
+        res.status(200).json({msg: "Comment deleted successfully!", index: index});
+    }).catch(err => {
+        console.log(err);
+        if (!err.httpStatusCode){
+            err.httpStatusCode = 500;
+            err.message = "Server-Side error. Try again later";
+        }
+
+        next(err);
+    })
 }
