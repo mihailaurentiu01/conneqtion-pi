@@ -109,6 +109,7 @@ exports.postLike = (req, res, next) => {
     const {postId} = req.body;
     const {userId} = req.body;
     const {index} = req.body;
+    const socket =  req.app.get("socket");
 
     let alreadyLiked = false;
 
@@ -131,6 +132,37 @@ exports.postLike = (req, res, next) => {
         }
 
         post.save();
+
+        // Notify the author the decision
+        post.populate("userId").execPopulate().then(newPost => {
+            if (newPost.userId.online){
+                socket.broadcast.emit("likedPost " + post.userId._id,
+                    {msg: req.user.fullName + " liked your post: '" + post.title + "'", alreadyLiked: alreadyLiked, index: index, user: req.user._id});
+            }else{
+                // Stack a notification
+                // Notify just if liked
+                if (!alreadyLiked){
+                    newPost.userId.notifications.push({
+                        notification: {
+                            msg: req.user.fullName + " liked your post: '" + post.title + "'",
+                            user: req.user._id,
+                            type: "postLikeStatus"
+                        },
+                        type: "postLikeStatus"
+                    });
+
+                    newPost.userId.save();
+                }
+            }
+        }).catch(err => {
+            console.log(err);
+            if (!err.httpStatusCode){
+                err.httpStatusCode = 500;
+                err.message = "Server-Side error. Try again later";
+            }
+
+            next(err);
+        });
 
         res.status(200).json({alreadyLiked: alreadyLiked, index: index});
     }).catch(err => console.log(err))
@@ -210,16 +242,37 @@ exports.delete = (req, res, next) => {
 exports.addComment = (req, res, next) => {
     const {postId} = req.body;
     const {comment} = req.body;
+    const socket =  req.app.get("socket");
 
     let usrComment = {user: req.user._id, comment: comment, date: new Date()};
 
     Post.findById(postId).then(post => {
-
         post.comments.push({userId: usrComment.user, comment: usrComment.comment, date: usrComment.date, username: req.user.fullName});
         return post.save();
     }).then(savedPost => {
         const comId = savedPost.comments[savedPost.comments.length-1]._id;
 
+        savedPost.populate("userId").execPopulate().then(post => {
+            usrComment._id = comId;
+            usrComment.username = req.user.fullName;
+
+            // If it's online, notify else stack
+            if (post.userId.online){
+                socket.broadcast.emit("commentedPost " + post.userId._id,
+                    {msg: req.user.fullName + " commented on your post: '" + post.title + "'", postId: postId, user: req.user._id, comment: usrComment});
+            }else{
+                post.userId.notifications.push({
+                    notification: {
+                        msg: req.user.fullName + " commented on your post: '" + post.title + "'",
+                        user: req.user._id,
+                        type: "postMessageStatus"
+                    },
+                    type: "postMessageStatus"
+                });
+
+                post.userId.save();
+            }
+        });
         return res.status(200).json({comment: {
                 comment: usrComment.comment,
                 date: usrComment.date,
@@ -245,6 +298,8 @@ exports.deleteComment = (req, res, next) => {
     const {commentId} = req.body;
     const {index} = req.body;
 
+    const socket =  req.app.get("socket");
+
     Post.findById(postId).then(post => {
         const commentIndex = post.comments.findIndex(comment => {
             return comment._id.toString() === commentId.toString();
@@ -252,6 +307,10 @@ exports.deleteComment = (req, res, next) => {
 
         post.comments.splice(commentIndex, 1);
         post.save();
+
+        post.populate("userId").execPopulate().then(newPost => {
+            socket.broadcast.emit("postCommentDeleted " + newPost.userId._id, {postId: postId, index: commentIndex})
+        });
 
         res.status(200).json({msg: "Comment deleted successfully!", index: index});
     }).catch(err => {

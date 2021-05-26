@@ -277,6 +277,11 @@ export default {
           this.addNotification({notificationId: notification._id, userThatSentFriendship: notification.notification.userThatSentFriendship, type: notification.notification.type});
         }else if (notification.notification.type === "friendshipStatus"){
           this.addNotification({notificationId: notification._id, msg: notification.notification.msg, userId: notification.notification.id, type: notification.notification.type});
+        } else if (notification.notification.type === "postLikeStatus"){
+          this.addNotification({notificationId: notification._id, msg: notification.notification.msg, type: notification.type, userId: notification.notification.user})
+        } else if (notification.notification.type === "postMessageStatus"){
+          this.addNotification({notificationId: notification._id, msg: notification.notification.msg, type: notification.type, userId: notification.notification.user})
+
         }
       });
 

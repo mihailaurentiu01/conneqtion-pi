@@ -73,6 +73,12 @@
                   <div v-else-if="notification.type === 'friendshipStatus'">
                     <friend-request-status :notification="notification"></friend-request-status>
                   </div>
+                  <div v-else-if="notification.type === 'postLikeStatus'">
+                    <post-liked-notification :notification="notification"></post-liked-notification>
+                  </div>
+                  <div v-else-if="notification.type === 'postMessageStatus'">
+                    <post-comment-notification :notification="notification"></post-comment-notification>
+                  </div>
                 </div>
               </div>
               <div v-else>
@@ -97,10 +103,12 @@ import * as keyNames from '../keynames';
 import FriendRequestNotification from "@/components/FriendRequestNotification";
 import {store} from "@/store";
 import FriendRequestStatus from "@/components/FriendRequestStatus";
+import PostLikedNotification from "@/components/PostLikedNotification";
+import PostCommentNotification from "@/components/PostCommentNotification";
 
 export default {
   name: "Navbar",
-  components: {FriendRequestStatus, FriendRequestNotification},
+  components: {PostCommentNotification, PostLikedNotification, FriendRequestStatus, FriendRequestNotification},
   data: () => {
     return {
       searchQuery: '',

@@ -72,6 +72,7 @@ import {addComment, deleteComment, getAllPost} from '../../services/post.service
 import {deletePost} from '../../services/post.services';
 import {mapGetters} from "vuex";
 import * as keyNames from "@/keynames";
+import clientSocket from "socket.io-client";
 
 export default {
   name: "ViewPosts",
@@ -155,6 +156,61 @@ export default {
         button: "OK"
       });
     }
+  },
+  beforeMount() {
+    const socket = clientSocket.connect("http://localhost:3000");
+
+    socket.on("likedPost " + this.getUserId, data => {
+      if (!data.alreadyLiked){
+        //{msg: req.user.fullName + " liked your post: '" + post.title + "'", alreadyLiked: alreadyLiked, index: index, user: req.user._id});
+        setTimeout(() => {
+          this.posts[data.index].likes.push({user: data.user});
+        },500);
+
+        this.$snack.success({
+          text: data.msg,
+          button: "OK"
+        });
+      }else{
+        this.posts.map(post => {
+          console.log(post);
+        });
+        const usrLikeIndex = this.posts[data.index].likes.findIndex(individualPost => {
+          return individualPost.user.toString() === this.getUserId.toString();
+        })
+
+        setTimeout(() => {
+          this.posts[data.index].likes.splice(usrLikeIndex, 1);
+        }, 500)
+      }
+    });
+
+    socket.on("commentedPost " + this.getUserId, data => {
+      const {postId} = data;
+
+      this.posts.map(post => {
+        if (post._id.toString() === postId.toString()){
+          post.comments.push(data.comment);
+        }
+      })
+
+      this.$snack.success({
+        text: data.msg,
+        button: "OK"
+      });
+    });
+
+    socket.on("postCommentDeleted " + this.getUserId, data => {
+      const {postId} = data;
+      const {index} = data;
+
+      this.posts.map(post => {
+        if (post._id.toString() === postId.toString()){
+          post.comments.splice(index, 1);
+        }
+      });
+    })
+
   },
   computed: {
     ...mapGetters({
