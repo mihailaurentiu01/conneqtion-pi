@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const bcrypt = require("bcrypt");
 
 exports.search = (req, res, next) => {
     let query = req.query.query;
@@ -202,4 +203,41 @@ exports.statusAccept = (req, res, next) => {
 
 exports.pendingNotifications = (req, res, next) => {
     return res.status(200).json({notifications: req.user.notifications});
+}
+
+exports.getUserInfo = async (req, res, next) => {
+    const {userId} = req.query;
+
+    const user = await User.findById(userId);
+
+    return res.status(200).json({user});
+}
+
+exports.changeEmail = async (req, res, next) => {
+    const {userId} = req.body;
+    const {newEmail} = req.body;
+
+    const userWithEmailExists = await User.findOne({email: newEmail});
+
+    if (userWithEmailExists){
+        return res.status(403).json({msg: "That email is not available"});
+    }
+
+    const userFound = await User.findById(userId);
+    userFound.email = newEmail;
+
+    await userFound.save();
+
+    return res.status(200).json({msg: "Email changed successfully"});
+}
+
+exports.changePassword = async (req, res, next) => {
+    const {newPassword} = req.body;
+
+    const encryptedPassword = await bcrypt.hash(newPassword, +process.env.SALT_ROUNDS);
+
+    req.user.password = encryptedPassword;
+    await req.user.save();
+
+    return res.status(200).json({msg: "Password changed successfully!"});
 }

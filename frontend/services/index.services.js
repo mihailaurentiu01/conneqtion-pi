@@ -30,3 +30,21 @@ exports.statusAccept = async (notificationId) => {
         return res;
     }).catch(err => console.log(err));
 }
+
+exports.requestUserData = async(userId) => {
+    return await axios.get("/v1/user/get?userId=" + userId).then(async (res) => {
+        return res;
+    }).catch(err => console.log(err))
+}
+
+exports.changeEmail = async (userId, newEmail) => {
+    return await axios.post("/v1/user/changemail", {userId, newEmail}).then(async (res) => {
+        return res;
+    }).catch(err => console.log(err));
+}
+
+exports.changePassword = async (newPassword) => {
+    return await axios.post("/v1/user/changepass", {newPassword}).then(async (res) => {
+        return res;
+    }).catch(err => console.log(err));
+}

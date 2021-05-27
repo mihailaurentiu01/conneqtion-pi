@@ -59,7 +59,9 @@ const userModel = new Schema({
             required: true,
             ref: 'Post'
         }}
-    ]
+    ],
+    resetToken: String,
+    resetTokenExpires: Date
 },  { timestamps: true });
 
 module.exports = mongoose.model("User", userModel);

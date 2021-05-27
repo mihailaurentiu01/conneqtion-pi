@@ -15,7 +15,7 @@ const routes = [
     component: () => import("@/components/Auth.vue"),
     children: [
       {path: "", name: "Login", component: () => import("@/views/Login.vue")},
-      {path: "signup", name: "SignUp", component: () => import("@/views/SignUp.vue")}
+      {path: "signup", name: "SignUp", component: () => import("@/views/SignUp.vue")},
     ],
     beforeEnter: (to, from, next) => {
       let ls = new SecureLS({isCompression: false});
@@ -65,7 +65,23 @@ const routes = [
       {path: "add", name: "AddPost", component: () => import("@/views/AddPost")},
       {path: "edit/:id", name: "EditPost", component: () => import("@/views/EditPost")}
     ],
-    component: () => import("@/views/Posts")
+    component: () => import("@/views/Posts"),
+    beforeEnter: (to, from, next) => {
+      let ls = new SecureLS({isCompression: false});
+      let vuex = ls.get("vuex");
+
+      if (vuex.length > 0) vuex = JSON.parse(ls.get("vuex"));
+      else next({to: "/auth", params: {error: "You must login first"}});
+
+      if (!vuex.loggedIn || !vuex.accessToken){
+        return next({name: "Login", params: {error: "You must login first"}})
+      }
+
+      next();
+    }
+  },
+  {
+    path: "/profile", name: "Profile", component: () => import("@/views/Profile")
   }
 ]
 

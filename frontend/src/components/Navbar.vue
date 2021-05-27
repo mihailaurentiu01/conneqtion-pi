@@ -35,7 +35,7 @@
               <template  #button-content >
                 <em><img width="40px" src="../assets/icons/user(1).png" alt="User logo"></em>
               </template>
-              <b-dropdown-item href="#">Profile</b-dropdown-item>
+              <router-link :to="{name: 'Profile'}">d</router-link>
               <b-dropdown-item @click="logout" href="#">
                 Logout
               </b-dropdown-item>
@@ -52,7 +52,7 @@
           <template  #button-content >
             <em><img width="40px" src="../assets/icons/user(1).png" alt="User logo"></em>
           </template>
-          <b-dropdown-item href="#">Profile</b-dropdown-item>
+          <router-link :to="{name: 'Profile'}" class="ml-4 d-block text-dark">Profile</router-link>
           <b-dropdown-item @click="logout" href="#">Logout</b-dropdown-item>
         </b-nav-item-dropdown>
       </div>

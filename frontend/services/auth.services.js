@@ -53,7 +53,14 @@ exports.doLogin = async (user) => {
 }
 
 exports.doLogout = async (notifications) => {
-    return await axios.post("v1/auth/logout", {notifications}).then(async (res) => {
+    return await axios.post("/v1/auth/logout", {notifications}).then(async (res) => {
         return res;
     }).catch(err => console.log(err));
 }
+
+/*
+exports.requestForgetPassword = async (email) => {
+    return await axios.post("/v1/auth/forgot", {email}).then(async (res) => {
+        return res;
+    }).catch(err => console.log(err));
+}*/
