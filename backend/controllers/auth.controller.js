@@ -6,15 +6,6 @@ const cookie = require("cookie");
 const {validationResult} = require("express-validator");
 const crypto = require("crypto");
 
-/*const nodemailer = require("nodemailer");
-const mailgunService = require("nodemailer-mailgun-transport");
-const transporter = nodemailer.createTransport(mailgunService({
-    auth: {
-        api_key: "98028e3fbebc5b3b3be93c69118c7b8b-1553bd45-ef70825b",
-        domain: "sandboxff814699e584407ba1cfa682f1ca023b.mailgun.org"
-    }
-}))*/
-
 
 exports.signup = async (req, res, next) => {
     let errors = validationResult(req);
