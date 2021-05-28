@@ -27,6 +27,10 @@
             <div class="col-md-4 ml-4">
               <router-link class="btn-success p-2 ml-3" :to="{name: 'Posts'}">Posts</router-link>
             </div>
+
+            <div class="col-md-2">
+              <router-link class="btn-success p-2 ml-3" :to="{name: 'Friends'}">Friends</router-link>
+            </div>
           </div>
 
           <div class="d-block d-lg-none">
@@ -35,7 +39,7 @@
               <template  #button-content >
                 <em><img width="40px" src="../assets/icons/user(1).png" alt="User logo"></em>
               </template>
-              <router-link :to="{name: 'Profile'}">d</router-link>
+              <router-link :to="{name: 'Profile', params: {id: userId}}">d</router-link>
               <b-dropdown-item @click="logout" href="#">
                 Logout
               </b-dropdown-item>
@@ -52,7 +56,7 @@
           <template  #button-content >
             <em><img width="40px" src="../assets/icons/user(1).png" alt="User logo"></em>
           </template>
-          <router-link :to="{name: 'Profile'}" class="ml-4 d-block text-dark">Profile</router-link>
+          <router-link :to="{name: 'Profile', params: {id: userId}}" class="ml-4 d-block text-dark">Profile</router-link>
           <b-dropdown-item @click="logout" href="#">Logout</b-dropdown-item>
         </b-nav-item-dropdown>
       </div>
@@ -155,7 +159,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      notifications: keyNames.GET_NOTIFICATIONS
+      notifications: keyNames.GET_NOTIFICATIONS,
+      userId: keyNames.GET_USER_ID
     })
   },
   directives: {

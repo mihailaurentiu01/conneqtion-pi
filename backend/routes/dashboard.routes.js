@@ -10,7 +10,7 @@ router.get("/pendingFriends", authMiddlewares.verifyToken, dashboardController.p
 router.post("/friendReqStatus", authMiddlewares.verifyToken, dashboardController.friendReqStatus);
 router.get("/pendingNotifications", authMiddlewares.verifyToken, dashboardController.pendingNotifications);
 router.post("/statusAccept", authMiddlewares.verifyToken, dashboardController.statusAccept);
-router.get("/get", authMiddlewares.verifyToken, dashboardController.getUserInfo);
+router.get("/get", dashboardController.getUserInfo);
 router.post("/changemail", authMiddlewares.verifyToken, dashboardController.changeEmail);
 router.post("/changepass", authMiddlewares.verifyToken, dashboardController.changePassword);
 module.exports = router;

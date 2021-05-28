@@ -62,6 +62,10 @@
               </div>
             </div>
           </div>
+
+          <div class="fixed-bottom">
+            <h1>hola</h1>
+            </div>
         </div>
     </body>
     <router-view/>
@@ -272,7 +276,6 @@ export default {
     if (notifications.length >  0){
       notifications.map(notification => {
         //friendThatRequested
-        console.log(notification)
         if (notification.notification.type === "friendship"){
           this.addNotification({notificationId: notification._id, userThatSentFriendship: notification.notification.userThatSentFriendship, type: notification.notification.type});
         }else if (notification.notification.type === "friendshipStatus"){
@@ -281,7 +284,6 @@ export default {
           this.addNotification({notificationId: notification._id, msg: notification.notification.msg, type: notification.type, userId: notification.notification.user})
         } else if (notification.notification.type === "postMessageStatus"){
           this.addNotification({notificationId: notification._id, msg: notification.notification.msg, type: notification.type, userId: notification.notification.user})
-
         }
       });
 
@@ -290,7 +292,6 @@ export default {
         button: "OK"
       });
     }
-
   },
   computed: {
     ...mapGetters({

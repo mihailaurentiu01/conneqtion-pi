@@ -210,6 +210,14 @@ exports.getUserInfo = async (req, res, next) => {
 
     const user = await User.findById(userId);
 
+    await user.populate("posts.post").execPopulate();
+    await user.populate("friends.userId").execPopulate();
+
+    user.posts = user.posts.map(post => {
+        if (post.post.public) return post;
+        else return null;
+    })
+
     return res.status(200).json({user});
 }
 
