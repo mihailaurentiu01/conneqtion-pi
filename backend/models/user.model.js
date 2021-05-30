@@ -53,6 +53,49 @@ const userModel = new Schema({
             type: String
         }
     }],
+    chats: [
+        {
+            with: {
+                type: Schema.Types.ObjectId,
+                required: true,
+                ref: 'User'
+            },
+            history: [
+                {
+                    name: {
+                      type: String
+                    },
+                    time: {
+                        type: Date,
+                    },
+                    message: {
+                        type: String,
+                    },
+                    type: {
+                        type: String,
+                        default: "history"
+                    }
+                }
+            ],
+            replies: [
+                {
+                    name: {
+                      type: String
+                    },
+                    time: {
+                        type: Date,
+                    },
+                    message: {
+                        type: String,
+                    },
+                    type: {
+                        type: String,
+                        default: "replies"
+                    }
+                }
+            ]
+        }
+    ],
     posts: [
         {post: {
             type: Schema.Types.ObjectId,

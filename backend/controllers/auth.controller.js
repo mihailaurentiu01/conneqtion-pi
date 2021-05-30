@@ -45,6 +45,7 @@ exports.signup = async (req, res, next) => {
 exports.login = async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
+    const socket =  req.app.get("socket");
 
     try {
         const user = await User.findOne({email});
@@ -60,11 +61,21 @@ exports.login = async (req, res, next) => {
 
         const refreshToken = this.generateRefreshToken(user._id.toString());
 
+        await user.populate("friends.userId").execPopulate();
         res.setHeader("Set-Cookie", cookie.serialize("RefreshToken", refreshToken, {httpOnly: true, path: "/", secure: true, maxAge: +process.env.HTTP_ONLY_COOKIE_MAX_AGE}));
         res.status(200).json({message: "Login success", accessToken, userId: user._id, status: 200});
 
         user.online = true;
+
         user.save();
+
+        if (user.friends.length > 0){
+            user.friends.map(friend => {
+                if (friend.status === 3){
+                    socket.broadcast.emit ("onlineNow " + friend.userId._id, {msg: user.fullName + " is online now", friend: {userId: {...user}}});
+                }
+            })
+        }
 
     } catch (error){
         if (!error.httpStatusCode){
@@ -94,6 +105,7 @@ exports.logout = async (req, res, next) => {
     const userId = req.user._id;
     req.user.online = false;
     const {notifications} = req.body;
+    const socket =  req.app.get("socket");
 
     // check notifications
     if (notifications.length > 0){
@@ -115,6 +127,13 @@ exports.logout = async (req, res, next) => {
     await redisClient.set("BL_" + userId.toString(), req.token);
 
     req.user.save();
+
+    req.user.friends.map(friend => {
+        if (friend.status === 3){
+            socket.broadcast.emit("offlineNow " + friend.userId, {id: req.user._id});
+        }
+    });
+
     return res.status(200).json({message: "Successfully logged out"})
 }
 

@@ -48,3 +48,15 @@ exports.changePassword = async (newPassword) => {
         return res;
     }).catch(err => console.log(err));
 }
+
+exports.chat = async (userToChatWith, message) => {
+    return await axios.post("/v1/user/chat", {userToChatWith, message}).then(async (res) => {
+        return res;
+    }).catch(err => console.log(err));
+}
+
+exports.prevChats = async (userToChatWith) => {
+    return await axios.post("/v1/user/prevchat", {userToChatWith}).then(async (res) => {
+        return res;
+    }).catch (err => console.log(err));
+}

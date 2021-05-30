@@ -85,6 +85,9 @@ const routes = [
   },
   {
     path: "/friends", name: "Friends", component: () => import("@/views/Friends")
+  },
+  {
+    path: "/chat", name: "Chat", component: () => import("@/views/Chat")
   }
 ]
 

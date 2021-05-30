@@ -1,6 +1,27 @@
 <template>
   <div>
     <body id="body">
+
+     <div class="container-fluid">
+       <div class="row">
+         <div class="col-md-12 d-flex justify-content-end">
+
+
+          <div v-if="userData !== null">
+            <div>
+              <h1>Online Now</h1>
+            </div>
+            <div v-if="userData.friends.length > 0" style="z-index: 1" class="border position-absolute p-2 rounded">
+              <div v-for="friend in userData.friends" v-if="friend.userId.online">
+                    <router-link class="mb-2 btn" :to="{name: 'Chat', params: {with: friend.userId}}">{{friend.userId.fullName}}</router-link>
+              </div>
+            </div>
+          </div>
+
+         </div>
+       </div>
+     </div>
+
         <div class="container">
           <div v-if="friendsPosts.length > 0">
             <div>
@@ -62,11 +83,8 @@
               </div>
             </div>
           </div>
-
-          <div class="fixed-bottom">
-            <h1>hola</h1>
-            </div>
         </div>
+
     </body>
     <router-view/>
   </div>
@@ -79,7 +97,7 @@ import  {mapGetters, mapMutations} from 'vuex';
 import * as keyNames from '../keynames';
 import clientSocket from 'socket.io-client';
 import axios from 'axios';
-import {pendingNotifications} from '../../services/index.services';
+import {pendingNotifications, requestUserData} from '../../services/index.services';
 import {getFriendsPosts} from '../../services/post.services';
 import {likePost} from '../../services/post.services';
 import {addComment, deleteComment} from '../../services/post.services';
@@ -96,7 +114,8 @@ export default {
       searchEnabled: true,
       friendsPosts: [],
       loading: true,
-      showComments: false
+      showComments: false,
+      userData: null
     }
   },
   methods: {
@@ -129,20 +148,20 @@ export default {
       if (res.status === 200){
         if (!res.data.alreadyLiked){
           this.friendsPosts.map (post => {
-            setTimeout(() => {
-              post.posts[res.data.index].likes.push({user: this.getUserId});
-            },500)
+              if (post.posts[res.data.index] !== undefined){
+                post.posts[res.data.index].likes.push({user: this.getUserId});
+              }
             //post.posts[res.data.index].likes.push({user: this.getUserId});
           })
         }else{
           this.friendsPosts.map(post => {
-            const index = post.posts[res.data.index].likes.findIndex(individualPost => {
-              return individualPost.user.toString() === this.getUserId.toString();
-            });
+            if (post.posts[res.data.index] !== undefined){
+              const index = post.posts[res.data.index].likes.findIndex(individualPost => {
+                return individualPost.user.toString() === this.getUserId.toString();
+              });
 
-            setTimeout(() => {
-              post.posts[res.data.index].likes.splice(index, 1);
-            }, 500)
+                post.posts[res.data.index].likes.splice(index, 1);
+            }
           })
         }
       }
@@ -268,6 +287,40 @@ export default {
         text: data.friend + " deleted a post!",
         button: "OK"
       });
+    });
+
+    socket.on("startedChat " + this.getUserId, data => {
+      console.log(this.$route)
+
+      if (this.$route.name !== "Chat"){
+        this.$snack.success({
+          text: data.msg,
+          button: "OK"
+        });
+      }
+    });
+
+    socket.on("onlineNow " + this.getUserId, data => {
+      if (this.userData !== null){
+        this.userData.friends.push({userId: data.friend.userId._doc});
+      }
+
+      this.$snack.success({
+        text: data.msg,
+        button: "OK"
+      });
+
+    });
+
+    socket.on("offlineNow " + this.getUserId, data => {
+      if (this.userData !== null){
+        const index = this.userData.friends.findIndex(friend => friend.userId._id.toString() === data.id);
+
+        if (index >= 0){
+          this.userData.friends[index].userId.online = false;
+        }
+        console.log(this.userData.friends);
+      }
     })
 
     const pendingNotif = await pendingNotifications();
@@ -284,6 +337,8 @@ export default {
           this.addNotification({notificationId: notification._id, msg: notification.notification.msg, type: notification.type, userId: notification.notification.user})
         } else if (notification.notification.type === "postMessageStatus"){
           this.addNotification({notificationId: notification._id, msg: notification.notification.msg, type: notification.type, userId: notification.notification.user})
+        } else if (notification.notification.type === "chatMessage"){
+          this.addNotification({notificationId: notification._id, msg: notification.notification.msg, type: notification.type, userId: notification.notification.user})
         }
       });
 
@@ -291,6 +346,12 @@ export default {
         text: "You have pending notifications",
         button: "OK"
       });
+    }
+
+    const getUserData = await requestUserData(this.getUserId);
+
+    if (getUserData.status === 200){
+      this.userData = getUserData.data.user;
     }
   },
   computed: {

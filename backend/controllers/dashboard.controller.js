@@ -1,5 +1,6 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
+const sio = require("../sockets/socket");
 
 exports.search = (req, res, next) => {
     let query = req.query.query;
@@ -29,10 +30,6 @@ exports.search = (req, res, next) => {
 
         res.status(200).json({friendsFound});
     }).catch(err => console.log(err));
-}
-
-exports.test = (req, res, next) => {
-    res.status(200).json({message: "SUCCESS"});
 }
 
 exports.addFriend = (req, res, next) =>{
@@ -248,4 +245,68 @@ exports.changePassword = async (req, res, next) => {
     await req.user.save();
 
     return res.status(200).json({msg: "Password changed successfully!"});
+}
+
+exports.chat = async (req, res, next) => {
+    const {userToChatWith} = req.body;
+    const {message} = req.body;
+    const socket =  req.app.get("socket");
+
+    const index = req.user.chats.findIndex(chat => chat.with.toString() === userToChatWith.toString());
+    const usrToChatWith = await User.findById(userToChatWith);
+
+    if (index >= 0){
+        req.user.chats[index].history.push({message: message, time: new Date(), name: req.user.fullName})
+    }else{
+        req.user.chats.push({with: userToChatWith, history: [{message: message, time: new Date(), name: req.user.fullName}]})
+    }
+
+    const indexUsrToChatWith = usrToChatWith.chats.findIndex(chat => chat.with.toString() === req.user._id.toString());
+
+    if (indexUsrToChatWith >= 0){
+        usrToChatWith.chats[indexUsrToChatWith].replies.push({message: message, time: new Date(), name: req.user.fullName});
+    }else{
+        usrToChatWith.chats.push({with: req.user._id, replies: [{message: message, time: new Date(), name: req.user.fullName}]})
+    }
+
+    req.user.save();
+
+    if (usrToChatWith.online){
+        socket.broadcast.emit("startedChat " + userToChatWith, {msg: req.user.fullName + " just sent you a chat message"});
+    } else{
+        // stack notification
+        usrToChatWith.notifications.push({notification: {
+            msg: req.user.fullName + " sent you a chat message",
+            user: req.user._id,
+            type: "chatMessage"
+        }, type: "chatMessage"});
+    }
+
+    usrToChatWith.save();
+
+    sio.getIo().emit("chatWith " + userToChatWith, {message: message, time: new Date(), name: req.user.fullName, type: 'replies'})
+
+    // your message
+    res.status(200).json({data: {message: message, time: new Date(), name: req.user.fullName, type: 'history'}});
+}
+
+exports.prevConversation = (req, res, next) => {
+    const {userToChatWith} = req.body;
+
+    const index = req.user.chats.findIndex(chat => chat.with.toString() === userToChatWith.toString());
+
+    if  (index >= 0){
+        let history = req.user.chats[index].history;
+        let replies = req.user.chats[index].replies;
+
+        const chat = history.concat(replies);
+
+        chat.sort((a, b) => {
+            return new Date(a.time) - new Date(b.time);
+        });
+
+        return res.status(200).json({chat})
+    }
+
+    res.status(200).json({chat: []})
 }
