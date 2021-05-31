@@ -63,10 +63,15 @@ exports.addFriend = (req, res, next) =>{
                 }});
             usertoaddasfriend.save();
         }else{
-            socket.broadcast.emit("receivedFriendship " + userToAddAsFriend, {msg: "'" + req.user.fullName + "' just sent you a friend request!", id: req.user._id})
-            socket.broadcast.emit("receivedNotification " + userToAddAsFriend, {userThatSentFriendship: {
+            sio.getIo().emit("receivedFriendship " + userToAddAsFriend, {msg: "'" + req.user.fullName + "' just sent you a friend request!", id: req.user._id})
+            sio.getIo().emit("receivedNotification " + userToAddAsFriend, {userThatSentFriendship: {
                     id: req.user._id, name: req.user.fullName, location: req.user.location
                 }, type: "friendship"})
+
+/*            socket.broadcast.emit("receivedFriendship " + userToAddAsFriend, {msg: "'" + req.user.fullName + "' just sent you a friend request!", id: req.user._id})
+            socket.broadcast.emit("receivedNotification " + userToAddAsFriend, {userThatSentFriendship: {
+                    id: req.user._id, name: req.user.fullName, location: req.user.location
+                }, type: "friendship"})*/
         }
 
         return res.status(200).json({message: "Friend request sent"});
@@ -309,4 +314,28 @@ exports.prevConversation = (req, res, next) => {
     }
 
     res.status(200).json({chat: []})
+}
+
+exports.deleteFriend = async (req, res, next) => {
+    const {friendToDelete} = req.body;
+
+    const index = req.user.friends.findIndex(friend => friend.userId.toString() === friendToDelete.toString());
+
+    if (index >= 0){
+        req.user.friends.splice(index, 1);
+        req.user.save();
+    }
+
+    const friend = await User.findById(friendToDelete);
+
+    const friendIndex = friend.friends.findIndex(fr => fr.userId.toString() === req.user._id.toString());
+
+    if (friendIndex >= 0){
+        friend.friends.splice(friendIndex, 1);
+        friend.save();
+    }
+
+    sio.getIo().emit("offlineNow " + friendToDelete, {id: req.user._id})
+
+    res.status(200).json({msg: "Friend deleted successfully", index: index});
 }

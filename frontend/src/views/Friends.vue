@@ -10,8 +10,9 @@
                     <h5 class="card-title">{{friend.userId.fullName}}</h5>
                     <p class="card-text"><strong>Status: </strong> {{friend.status === 3 ? 'Friends' : friend.status === 2 ? friend.userId.fullName + ' is considering your friend request.' : 'This user requested you to be his friend'}}</p>
                     <p>{{friend.userId.online ? 'Online Now' : 'Offline'}}</p>
-                    <button v-if="friend.status === 3" class="btn btn-danger mr-3">Delete</button>
-                    <button v-if="friend.status === 3" class="btn btn-success">Send a message</button>
+                    <button v-if="friend.status === 3" @click="delFriend(friend.userId._id)" class="btn btn-danger mr-3">Delete</button>
+                    <button v-if="friend.status === 3" class="btn btn-success mr-3">Send a message</button>
+                    <router-link v-if="friend.status === 3" class="btn btn-success" :to="{name: 'Chat', params: {with: friend.userId}}">Chat</router-link>
                   </div>
                 </div>
               </div>
@@ -23,7 +24,7 @@
 </template>
 
 <script>
-import {requestUserData} from "../../services/index.services";
+import {requestUserData, deleteFriend} from "../../services/index.services";
 import {mapGetters} from 'vuex';
 import * as keyNames from '../keynames';
 
@@ -32,6 +33,16 @@ export default {
   data: () => {
     return {
       user: ''
+    }
+  },
+  methods: {
+    delFriend: async function(friendId){
+      const res = await deleteFriend(friendId);
+
+      if (res.status === 200){
+        const {index} = res.data;
+        this.user.friends.splice(index, 1);
+      }
     }
   },
   async beforeMount() {

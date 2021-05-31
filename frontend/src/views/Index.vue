@@ -319,9 +319,8 @@ export default {
         if (index >= 0){
           this.userData.friends[index].userId.online = false;
         }
-        console.log(this.userData.friends);
       }
-    })
+    });
 
     const pendingNotif = await pendingNotifications();
     const {notifications} = pendingNotif.data;

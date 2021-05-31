@@ -60,3 +60,9 @@ exports.prevChats = async (userToChatWith) => {
         return res;
     }).catch (err => console.log(err));
 }
+
+exports.deleteFriend = async (friendToDelete) => {
+    return await axios.post("/v1/user/deleteFriend", {friendToDelete}).then(async (res) => {
+        return res;
+    }).catch(err => console.log(err));
+}
