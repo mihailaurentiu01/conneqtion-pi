@@ -11,7 +11,7 @@
 
           <div class="row">
             <div class="col-8 col-md-7">
-              <b-form-input v-model="searchQuery" name="searchQuery" size="sm"  placeholder="Search friends, posts..."></b-form-input>
+              <b-form-input v-model="searchQuery" name="searchQuery" size="sm"  placeholder="Search friends..."></b-form-input>
             </div>
             <div class="col-4 col-md-4">
               <b-button  @click="trySearch();" size="sm" class="my-sm-0 btn-success" type="submit">Search</b-button>

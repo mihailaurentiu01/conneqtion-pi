@@ -11,8 +11,7 @@
                     <p class="card-text"><strong>Status: </strong> {{friend.status === 3 ? 'Friends' : friend.status === 2 ? friend.userId.fullName + ' is considering your friend request.' : 'This user requested you to be his friend'}}</p>
                     <p>{{friend.userId.online ? 'Online Now' : 'Offline'}}</p>
                     <button v-if="friend.status === 3" @click="delFriend(friend.userId._id)" class="btn btn-danger mr-3">Delete</button>
-                    <button v-if="friend.status === 3" class="btn btn-success mr-3">Send a message</button>
-                    <router-link v-if="friend.status === 3" class="btn btn-success" :to="{name: 'Chat', params: {with: friend.userId}}">Chat</router-link>
+                    <router-link v-if="friend.status === 3" class="btn btn-success" :to="{name: 'Chat', params: {with: friend.userId}}">Chat / Send Message</router-link>
                   </div>
                 </div>
               </div>

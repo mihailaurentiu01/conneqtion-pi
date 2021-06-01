@@ -104,6 +104,7 @@ exports.generateRefreshToken = (userId) => {
 exports.logout = async (req, res, next) => {
     const userId = req.user._id;
     req.user.online = false;
+
     const {notifications} = req.body;
     const socket =  req.app.get("socket");
 
