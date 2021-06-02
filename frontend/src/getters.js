@@ -12,5 +12,8 @@ export default {
     },
     [keyNames.GET_NOTIFICATIONS]: state => {
         return state.notifications;
+    },
+    [keyNames.GET_ROLE]: state => {
+        return state.role;
     }
 }

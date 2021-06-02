@@ -55,5 +55,8 @@ export default {
             userId: null,
             loading: false,
             notifications: []*/
+    },
+    [keyNames.MUTATE_ROLE]: (state, value) => {
+        state.role = value;
     }
 }

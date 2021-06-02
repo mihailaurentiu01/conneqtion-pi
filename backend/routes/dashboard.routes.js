@@ -15,4 +15,5 @@ router.post("/changepass", authMiddlewares.verifyToken, dashboardController.chan
 router.post("/chat", authMiddlewares.verifyToken, dashboardController.chat);
 router.post("/prevchat", authMiddlewares.verifyToken, dashboardController.prevConversation);
 router.post("/deleteFriend", authMiddlewares.verifyToken, dashboardController.deleteFriend);
+
 module.exports = router;

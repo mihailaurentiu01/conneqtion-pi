@@ -67,6 +67,9 @@
             <div class="col-6 col-md-4">
               <router-link class="text-light" :to="{name: 'SignUp'}">Sign Up</router-link>
             </div>
+            <div class="col-6 col-md-4">
+              <router-link class="text-light" :to="{name: 'Admin'}">Admin</router-link>
+            </div>
           </div>
         </div>
       </div>
@@ -92,7 +95,8 @@ export default {
     ...mapMutations({
       setLoggedIn: keyNames.MUTATE_USER_LOGGED_IN,
       setAccessToken: keyNames.MUTATE_USER_ACCESS_TOKEN,
-      setUserId: keyNames.MUTATE_USER_ID
+      setUserId: keyNames.MUTATE_USER_ID,
+      setRole: keyNames.MUTATE_ROLE
     }),
     check: function(){
       this.errors = [];
@@ -121,6 +125,7 @@ export default {
             this.setLoggedIn(true);
             this.setAccessToken(data.accessToken);
             this.setUserId(data.userId);
+            this.setRole(data.role);
 
             this.$router.push({name: "Index"});
           }else if (data.status === 404){

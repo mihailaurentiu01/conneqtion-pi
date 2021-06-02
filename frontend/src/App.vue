@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <navbar v-if="loggedIn" @search="search" @query="searchQuery"></navbar>
+    <navbar v-if="loggedIn && role === 'User'" @search="search" @query="searchQuery"></navbar>
     <body v-if="loggedIn && searchEnabled" id="body">
-      <div  v-if="friendsResult !== null && searchEnabled" >
+      <div v-if="friendsResult !== null && searchEnabled" >
         <search :friendsResult="friendsResult" @enableSearch="enableSearch" :query="query"></search>
       </div>
     </body>
@@ -50,7 +50,8 @@ import * as keyNames from '../src/keynames';
     },
     computed: {
       ...mapGetters({
-        loggedIn: keyNames.GET_USER_LOGGED_IN
+        loggedIn: keyNames.GET_USER_LOGGED_IN,
+        role: keyNames.GET_ROLE
       })
     }
   }

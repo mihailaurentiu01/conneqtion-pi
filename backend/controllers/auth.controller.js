@@ -63,7 +63,7 @@ exports.login = async (req, res, next) => {
 
         await user.populate("friends.userId").execPopulate();
         res.setHeader("Set-Cookie", cookie.serialize("RefreshToken", refreshToken, {httpOnly: true, path: "/", secure: true, maxAge: +process.env.HTTP_ONLY_COOKIE_MAX_AGE}));
-        res.status(200).json({message: "Login success", accessToken, userId: user._id, status: 200});
+        res.status(200).json({message: "Login success", accessToken, userId: user._id, status: 200, role: user.role});
 
         user.online = true;
 
@@ -85,8 +85,24 @@ exports.login = async (req, res, next) => {
 
         return next(error);
     }
+}
 
+exports.adminLogin = async (req, res, next) => {
+    const {password} = req.body;
 
+    let admin = await User.findOne({email: "admin@conneqtion.com"});
+
+    const passesCheck = await bcrypt.compare(password, admin.password);
+
+    if (!passesCheck) return res.status(401).json({message: "Password doesn't match", status: 401});
+
+    const accessToken = jwt.sign({userId: admin._id.toString()}, process.env.JWT_ACCESS_SECRET,
+            {expiresIn: process.env.JWT_ACCESS_TIME});
+
+    const refreshToken = this.generateRefreshToken(admin._id.toString());
+
+    res.setHeader("Set-Cookie", cookie.serialize("RefreshToken", refreshToken, {httpOnly: true, path: "/", secure: true, maxAge: +process.env.HTTP_ONLY_COOKIE_MAX_AGE}));
+    res.status(200).json({message: "Login success", accessToken, userId: admin._id, status: 200, role: admin.role});
 }
 
 exports.generateRefreshToken = (userId) => {

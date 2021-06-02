@@ -58,6 +58,11 @@ exports.doLogout = async (notifications) => {
     }).catch(err => console.log(err));
 }
 
+exports.adminLogin = async(password) => {
+    return await axios.post("/v1/auth/adminlogin", {password}).then(async (res) => {
+        return res;
+    }).catch(err => console.log(err));
+}
 /*
 exports.requestForgetPassword = async (email) => {
     return await axios.post("/v1/auth/forgot", {email}).then(async (res) => {

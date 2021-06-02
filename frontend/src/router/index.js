@@ -88,7 +88,11 @@ const routes = [
   },
   {
     path: "/chat", name: "Chat", component: () => import("@/views/Chat")
-  }
+  },
+  {
+    path: "/admin", name: "Admin", component: () => import("@/views/Admin"),
+  },
+  {path: "/adminindex", name: "AdminIndex", component: () => import("@/views/AdminIndex")}
 ]
 
 const router = new VueRouter({

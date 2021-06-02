@@ -76,9 +76,6 @@
 
         <div class="row d-flex justify-content-center mt-4">
           <div class="col-6 col-md-4">
-            <router-link class="text-light" :to="{name: 'forgot'}">Forgot password?</router-link>
-          </div>
-          <div class="col-6 col-md-4">
             <router-link class="text-light" :to="{name: 'Login'}">Login</router-link>
           </div>
         </div>

@@ -103,6 +103,14 @@ const userModel = new Schema({
             ref: 'Post'
         }}
     ],
+    role: {
+        type: String,
+        default: "User"
+    },
+    isBanned: {
+        type: Boolean,
+        default: false
+    }
 },  { timestamps: true });
 
 module.exports = mongoose.model("User", userModel);

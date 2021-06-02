@@ -1,7 +1,8 @@
 <template>
   <div>
     <b-navbar id="navbar" toggleable="lg" type="dark" >
-      <router-link :to="{name:'Index'}" class="mr-3"><img width="150px" src="../assets/logo.png" alt="Conneqtion logo"></router-link>
+      <router-link v-if="role === 'User'" :to="{name:'Index'}" class="mr-3"><img width="150px" src="../assets/logo.png" alt="Conneqtion logo"></router-link>
+      <router-link v-if="role === 'Admin'" :to="{name:'AdminIndex'}" class="mr-3"><img width="150px" src="../assets/logo.png" alt="Conneqtion logo"></router-link>
 
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
@@ -10,15 +11,15 @@
         <b-navbar-nav >
 
           <div class="row">
-            <div class="col-8 col-md-7">
+            <div class="col-8 col-md-7" v-if="role === 'User'">
               <b-form-input v-model="searchQuery" name="searchQuery" size="sm"  placeholder="Search friends..."></b-form-input>
             </div>
-            <div class="col-4 col-md-4">
+            <div class="col-4 col-md-4" v-if="role === 'User'">
               <b-button  @click="trySearch();" size="sm" class="my-sm-0 btn-success" type="submit">Search</b-button>
             </div>
           </div>
 
-          <div class="row">
+          <div class="row" v-if="role === 'User'">
             <div class="col-md-2">
               <div class="ml-4">
                 <b-button @click="toggle" size="sm"  v-bind:class="[{'btn-danger' : notifications.length >0}, 'my-sm-0']"> <img width="20px" src="../assets/icons/notification(1).png" alt="Notification"></b-button>
@@ -39,7 +40,7 @@
               <template  #button-content >
                 <em><img width="40px" src="../assets/icons/user(1).png" alt="User logo"></em>
               </template>
-              <router-link :to="{name: 'Profile', params: {id: userId}}">d</router-link>
+              <router-link v-if="role === 'User'" :to="{name: 'Profile', params: {id: userId}}">d</router-link>
               <b-dropdown-item @click="logout" href="#">
                 Logout
               </b-dropdown-item>
@@ -56,7 +57,7 @@
           <template  #button-content >
             <em><img width="40px" src="../assets/icons/user(1).png" alt="User logo"></em>
           </template>
-          <router-link :to="{name: 'Profile', params: {id: userId}}" class="ml-4 d-block text-dark">Profile</router-link>
+          <router-link v-if="role === 'User'" :to="{name: 'Profile', params: {id: userId}}" class="ml-4 d-block text-dark">Profile</router-link>
           <b-dropdown-item @click="logout" href="#">Logout</b-dropdown-item>
         </b-nav-item-dropdown>
       </div>
@@ -97,7 +98,7 @@
       </div>
     </div>
 
-    <button @click="checkNotifications">remove notif</button>
+<!--    <button @click="checkNotifications">remove notif</button>-->
   </div>
 </template>
 
@@ -161,17 +162,18 @@ export default {
     }
   },
   mounted() {
-    this.popupItem = this.$el
+    this.popupItem = this.$el;
   },
   computed: {
     ...mapGetters({
       notifications: keyNames.GET_NOTIFICATIONS,
-      userId: keyNames.GET_USER_ID
+      userId: keyNames.GET_USER_ID,
+      role: keyNames.GET_ROLE
     })
   },
   directives: {
     ClickOutside
-  }
+  },
 }
 </script>
 
