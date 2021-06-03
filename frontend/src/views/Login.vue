@@ -132,6 +132,8 @@ export default {
             this.$router.push({name: "Login", params: {error: "No user has been found with the given email"}, query: {email: this.email}});
           } else if (data.status === 401){
             this.$router.push({name: "Login", params: {error: "Password doesn't match the given email"}, query: {email: this.email}});
+          }else{
+            this.$router.push({name: "Login", params: {error: data.msg}, query: {email: this.email}});
           }
         })
       }

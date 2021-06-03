@@ -1,13 +1,13 @@
 <template>
   <div>
    <body id="body">
-        <router-link class="btn-success p-2" :to="{name: 'AddPost'}">Create post</router-link>
 
         <div class="container">
+          <router-link class="btn btn-success p-2 mt-3 mb-3" :to="{name: 'AddPost'}">Create post</router-link>
           <div>
             <div v-if="posts.length > 0">
               <div v-for="post in posts">
-                <div v-if="post !== null">
+                <div v-if="post !== null && post !== undefined">
                 <div class="card mb-4">
                   <div class="card-header">
                     <div class="row">
@@ -56,6 +56,7 @@
                       </div>
                     </div>
                   </div>
+
                 </div>
                 </div>
               </div>
@@ -91,7 +92,9 @@ export default {
       if (res.status === 200){
         const {index} = res.data;
         this.posts.map(post => {
-            post.comments.splice(index, 1);
+            if (post !== undefined && post !== null){
+              post.comments.splice(index, 1);
+            }
         });
 
         this.$snack.success({
@@ -108,7 +111,7 @@ export default {
         this.$router.push({name: 'Posts', query: {id: postId, delete: 'yes'}});
 
         this.posts = res.data.posts;
-        console.log("deleted")
+
         //this.posts.splice(res.data.index, 1);
 
         this.$snack.success({
@@ -128,7 +131,7 @@ export default {
         const {postId} = res.data.comment;
 
         this.posts.map(post => {
-            if (post !== null){
+            if (post !== null && post !== undefined){
               if (post._id.toString() === postId.toString()){
                 post.comments.push(res.data.comment);
               }
@@ -141,10 +144,14 @@ export default {
     const res = await getAllPost();
 
     if (res.status === 200){
-      this.posts = res.data.posts.map(post => {
-        post.visible = false;
-        return post;
-      });
+      if ( res.data.posts !== null){
+        this.posts = res.data.posts.map(post => {
+          if (post !== null){
+            post.visible = false;
+            return post;
+          }
+        });
+      }
 
       this.user = res.data.user;
       this.loading = false;
@@ -189,15 +196,14 @@ export default {
       const {postId} = data;
 
       this.posts.map(post => {
-        if (post._id.toString() === postId.toString()){
-          post.comments.push(data.comment);
+        if (post !== null && post !== undefined){
+          if (post._id.toString() === postId.toString()){
+            post.comments.push(data.comment);
+          }
         }
       })
 
-      this.$snack.success({
-        text: data.msg,
-        button: "OK"
-      });
+
     });
 
     socket.on("postCommentDeleted " + this.getUserId, data => {
@@ -205,10 +211,13 @@ export default {
       const {index} = data;
 
       this.posts.map(post => {
-        if (post._id.toString() === postId.toString()){
-          post.comments.splice(index, 1);
+        if (post !== null && post !== undefined){
+          if (post._id.toString() === postId.toString()){
+            post.comments.splice(index, 1);
+          }
         }
       });
+
     })
 
   },

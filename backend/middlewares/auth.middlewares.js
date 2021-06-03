@@ -72,3 +72,14 @@ exports.verifyRefreshToken = (req, res, next) => {
         return next(error);
     }
 }
+
+exports.verifyAdmin = (req, res, next) => {
+    if (req.user.role === 'Admin'){
+        return next();
+    }else{
+        const error = new Error("No admin privilege found");
+        error.httpStatusCode = 403;
+
+        return next(error);
+    }
+}

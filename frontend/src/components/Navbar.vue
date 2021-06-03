@@ -87,6 +87,9 @@
                   <div v-else-if="notification.type === 'chatMessage'">
                     <chat-message :notification="notification"></chat-message>
                   </div>
+                  <div v-else-if="notification.type === 'adminMessage'">
+                    <admin-message :notification="notification"></admin-message>
+                  </div>
                 </div>
               </div>
               <div v-else>
@@ -114,10 +117,12 @@ import FriendRequestStatus from "@/components/FriendRequestStatus";
 import PostLikedNotification from "@/components/PostLikedNotification";
 import PostCommentNotification from "@/components/PostCommentNotification";
 import ChatMessage from "@/components/ChatMessage";
+import AdminMessage from "@/components/AdminMessage";
 
 export default {
   name: "Navbar",
   components: {
+    AdminMessage,
     ChatMessage,
     PostCommentNotification, PostLikedNotification, FriendRequestStatus, FriendRequestNotification},
   data: () => {

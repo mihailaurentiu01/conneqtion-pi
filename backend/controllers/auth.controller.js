@@ -56,6 +56,10 @@ exports.login = async (req, res, next) => {
 
         if (!passesCheck) return res.status(401).json({message: "Password doesn't match", status: 401});
 
+        if (user.isBanned){
+           return res.status(403).json({msg: "Your account has been banned! Contact the administrator for further information"})
+        }
+
         const accessToken = jwt.sign({userId: user._id.toString()}, process.env.JWT_ACCESS_SECRET,
             {expiresIn: process.env.JWT_ACCESS_TIME});
 

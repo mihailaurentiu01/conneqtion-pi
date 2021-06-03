@@ -210,7 +210,9 @@ exports.delete = (req, res, next) => {
         });
 
           const index = req.user.posts.findIndex(post => {
-                return post.post._id.toString() === postId.toString();
+              if (post.post !== null){
+                  return post.post._id.toString() === postId.toString();
+              }
         });
 
 

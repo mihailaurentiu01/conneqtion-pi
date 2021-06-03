@@ -46,12 +46,14 @@ export default {
   },
   async beforeMount() {
     if (this.loggedIn){
+      console.log("works")
         const res = await requestUserData(this.userId);
 
       if (res.status === 200){
         this.user = res.data.user;
       }
     }
+
   },
   computed: {
     ...mapGetters({

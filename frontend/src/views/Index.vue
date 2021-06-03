@@ -23,6 +23,8 @@
      </div>
 
         <div class="container">
+          <router-link :to="{name: 'AddPost'}" class="btn btn-success mb-3">Create Post</router-link>
+
           <div v-if="friendsPosts.length > 0">
             <div>
               <div v-for="post in friendsPosts">
@@ -322,6 +324,13 @@ export default {
       }
     });
 
+    socket.on("globalMessage " + this.getUserId, data => {
+      this.$snack.success({
+        text: "Admin Message: " + data.msg,
+        button: "OK"
+      });
+    });
+
     const pendingNotif = await pendingNotifications();
     const {notifications} = pendingNotif.data;
 
@@ -337,6 +346,8 @@ export default {
         } else if (notification.notification.type === "postMessageStatus"){
           this.addNotification({notificationId: notification._id, msg: notification.notification.msg, type: notification.type, userId: notification.notification.user})
         } else if (notification.notification.type === "chatMessage"){
+          this.addNotification({notificationId: notification._id, msg: notification.notification.msg, type: notification.type, userId: notification.notification.user})
+        } else if (notification.notification.type === "adminMessage"){
           this.addNotification({notificationId: notification._id, msg: notification.notification.msg, type: notification.type, userId: notification.notification.user})
         }
       });

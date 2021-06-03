@@ -140,7 +140,8 @@ exports.friendReqStatus = (req, res, next) => {
             }else{
                 usertoBeFriend.notifications.push({notification: {
                     msg: req.user.fullName + " has accepted your friend request!",
-                    id: req.user._id + "status"
+                    id: req.user._id + "status",
+                    type: "friendshipStatus"
                 }, type: "friendshipStatus"});
 
                 usertoBeFriend.save();
@@ -152,7 +153,8 @@ exports.friendReqStatus = (req, res, next) => {
         if (!usertoBeFriend.online){
             usertoBeFriend.notifications.push({notification: {
                     msg: req.user.fullName + " has refused your friend request!",
-                    id: req.user._id + "status"
+                    id: req.user._id + "status",
+                    type: "friendshipStatus"
                 }, type: "friendshipStatus"});
 
             usertoBeFriend.save();
@@ -215,10 +217,12 @@ exports.getUserInfo = async (req, res, next) => {
     await user.populate("posts.post").execPopulate();
     await user.populate("friends.userId").execPopulate();
 
-    user.posts = user.posts.map(post => {
-        if (post.post.public) return post;
-        else return null;
-    })
+    let filtered = user.posts.filter(post => post.post !== null);
+
+
+    filtered = filtered.filter(post => post.post.public)
+
+    user.posts = filtered;
 
     return res.status(200).json({user});
 }

@@ -24,25 +24,6 @@ Vue.use(VueSnackbar, {position: "bottom", time: 3000});
 Vue.config.productionTip = false
 
 new Vue({
-  beforeMount() {
-    window.addEventListener("load", this.onLoad);
-    window.addEventListener("beforeunload", this.onUnload);
-  },
-  beforeDestroy() {
-    window.removeEventListener("load", this.onLoad);
-    window.removeEventListener("beforeunload", this.onUnload);
-  },
-  methods: {
-    onLoad(event) {
-
-    },
-    onUnload(event) {
-      this.reset();
-    },
-    ...mapMutations([
-      'reset'
-    ]),
-  },
   router,
   store,
   render: h => h(App)
