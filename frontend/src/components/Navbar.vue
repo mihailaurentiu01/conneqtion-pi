@@ -11,36 +11,42 @@
         <b-navbar-nav >
 
           <div class="row">
-            <div class="col-8 col-md-7" v-if="role === 'User'">
+            <div class="col-8 col-md-7 mt-2 mt-md-0" v-if="role === 'User'">
               <b-form-input v-model="searchQuery" name="searchQuery" size="sm"  placeholder="Search friends..."></b-form-input>
             </div>
-            <div class="col-4 col-md-4" v-if="role === 'User'">
+            <div class="col-4 col-md-4 mt-2 mt-md-0" v-if="role === 'User'">
               <b-button  @click="trySearch();" size="sm" class="my-sm-0 btn-success" type="submit">Search</b-button>
             </div>
           </div>
 
           <div class="row" v-if="role === 'User'">
-            <div class="col-md-2">
-              <div class="ml-4">
+            <div class="col-2 mr-md-2 col-md-2 mt-3 mt-md-0">
+              <div class="ml-2">
                 <b-button @click="toggle" size="sm"  v-bind:class="[{'btn-danger' : notifications.length >0}, 'my-sm-0']"> <img width="20px" src="../assets/icons/notification(1).png" alt="Notification"></b-button>
               </div>
             </div>
-            <div class="col-md-4 ml-4">
-              <router-link class="btn-success p-2 ml-3" :to="{name: 'Posts'}">Posts</router-link>
+
+            <div class="col-2 mt-3 mt-md-0">
+              <router-link class="p-2" :to="{name: 'Index'}"><img width="35px" src="@/assets/icons/home.png" alt="Home"></router-link>
             </div>
 
-            <div class="col-md-2">
-              <router-link class="btn-success p-2 ml-3" :to="{name: 'Friends'}">Friends</router-link>
+            <div class="col-2 col-md-3 ml-2 mt-3 mt-md-0">
+              <router-link class="p-2" :to="{name: 'Posts'}"><img width="35px" src="@/assets/icons/archive.png" alt="Posts"></router-link>
             </div>
+
+            <div class="col-2 col-md-2 mt-3 mt-md-0">
+              <router-link class="p-2" :to="{name: 'Friends'}"><img width="35px" src="@/assets/icons/group.png" alt="Friends"></router-link>
+            </div>
+
           </div>
 
-          <div class="d-block d-lg-none">
+          <div class="d-block d-lg-none mt-3 mt-md-0">
             <b-nav-item-dropdown class="navbar-nav" right>
               <!-- Using 'button-content' slot -->
               <template  #button-content >
                 <em><img width="40px" src="../assets/icons/user(1).png" alt="User logo"></em>
               </template>
-              <router-link v-if="role === 'User'" :to="{name: 'Profile', params: {id: userId}}">d</router-link>
+              <router-link v-if="role === 'User'" :to="{name: 'Profile', params: {id: userId}}" class="ml-4 d-block text-dark">Profile</router-link>
               <b-dropdown-item @click="logout" href="#">
                 Logout
               </b-dropdown-item>

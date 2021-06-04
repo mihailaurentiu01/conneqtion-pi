@@ -8,7 +8,7 @@ exports.search = (req, res, next) => {
 
     const regexSearch = new RegExp(query, 'i');
 
-    User.find({fullName: {$regex: regexSearch}, '_id': {$ne: req.user._id}}).then(data => {
+    User.find({fullName: {$regex: regexSearch}, '_id': {$ne: req.user._id}, 'role': 'User'}).then(data => {
         const friendsFound = [];
 
         data.map(user => {
@@ -57,7 +57,8 @@ exports.addFriend = (req, res, next) =>{
                     userThatSentFriendship: {
                         id:  req.user._id,
                         name: req.user.fullName,
-                        location: req.user.location
+                        location: req.user.location,
+                        type: "friendship"
                     },
                     type: "friendship"
                 }});
@@ -65,7 +66,8 @@ exports.addFriend = (req, res, next) =>{
         }else{
             sio.getIo().emit("receivedFriendship " + userToAddAsFriend, {msg: "'" + req.user.fullName + "' just sent you a friend request!", id: req.user._id})
             sio.getIo().emit("receivedNotification " + userToAddAsFriend, {userThatSentFriendship: {
-                    id: req.user._id, name: req.user.fullName, location: req.user.location
+                    id: req.user._id, name: req.user.fullName, location: req.user.location,
+                    type: "friendship"
                 }, type: "friendship"})
 
 /*            socket.broadcast.emit("receivedFriendship " + userToAddAsFriend, {msg: "'" + req.user.fullName + "' just sent you a friend request!", id: req.user._id})

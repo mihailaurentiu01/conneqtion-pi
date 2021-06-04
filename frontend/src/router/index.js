@@ -84,15 +84,56 @@ const routes = [
     path: "/profile/:id", name: "Profile", component: () => import("@/views/Profile")
   },
   {
-    path: "/friends", name: "Friends", component: () => import("@/views/Friends")
+    path: "/friends", name: "Friends", component: () => import("@/views/Friends"),
+    beforeEnter: (to, from, next) => {
+      let ls = new SecureLS({isCompression: false});
+      let vuex = ls.get("vuex");
+
+      if (vuex.length > 0) vuex = JSON.parse(ls.get("vuex"));
+      else next({to: "/auth", params: {error: "You must login first"}});
+
+      if (!vuex.loggedIn || !vuex.accessToken){
+        return next({name: "Login", params: {error: "You must login first"}})
+      }
+
+      next();
+    }
   },
   {
-    path: "/chat", name: "Chat", component: () => import("@/views/Chat")
+    path: "/chat", name: "Chat", component: () => import("@/views/Chat"),
+    beforeEnter: (to, from, next) => {
+      let ls = new SecureLS({isCompression: false});
+      let vuex = ls.get("vuex");
+
+      if (vuex.length > 0) vuex = JSON.parse(ls.get("vuex"));
+      else next({to: "/auth", params: {error: "You must login first"}});
+
+      if (!vuex.loggedIn || !vuex.accessToken){
+        return next({name: "Login", params: {error: "You must login first"}})
+      }
+
+      next();
+    }
   },
   {
     path: "/admin", name: "Admin", component: () => import("@/views/Admin"),
   },
-  {path: "/adminindex", name: "AdminIndex", component: () => import("@/views/AdminIndex")}
+  {
+    path: "/adminindex", name: "AdminIndex", component: () => import("@/views/AdminIndex"),
+    beforeEnter: (to, from, next) => {
+      let ls = new SecureLS({isCompression: false});
+      let vuex = ls.get("vuex");
+
+      if (vuex.length > 0) vuex = JSON.parse(ls.get("vuex"));
+      else next({to: "/auth", params: {error: "You must login first"}});
+
+      if (!vuex.loggedIn || !vuex.accessToken){
+        return next({name: "Login", params: {error: "You must login first"}})
+      }
+
+      next();
+    }
+  }
 ]
 
 const router = new VueRouter({

@@ -7,15 +7,20 @@
          <div class="col-md-12 d-flex justify-content-end">
 
 
-          <div v-if="userData !== null">
+          <div v-if="userData !== null" >
             <div>
               <h1>Online Now</h1>
             </div>
-            <div v-if="userData.friends.length > 0" style="z-index: 1" class="border position-absolute p-2 rounded">
-              <div v-for="friend in userData.friends" v-if="friend.userId.online">
+            <div class="row ml-2">
+              <div v-if="userData.friends.length > 0" style="z-index: 1" class="border position-absolute rounded">
+                <div v-for="friend in userData.friends" v-if="friend.userId.online && friend.status === 3">
+                  <div class="col-12">
                     <router-link class="mb-2 btn" :to="{name: 'Chat', params: {with: friend.userId}}">{{friend.userId.fullName}}</router-link>
+                  </div>
+                </div>
               </div>
             </div>
+
           </div>
 
          </div>
@@ -31,7 +36,7 @@
                 <div v-if="post !== null">
                   <div v-for="(postData, index) in post.posts">
                     <div v-if="postData !== null">
-                      <div class="card mb-4">
+                      <div class="card mb-4 mt-4">
                         <div class="card-header">
                           <div class="row">
                             <div class="col-3 col-md-2 col-lg-1 d-flex justify-content-center">
@@ -197,7 +202,9 @@ export default {
         const {index} = res.data;
         this.friendsPosts.map(post => {
           post.posts.map(postsData => {
-            postsData.comments.splice(index, 1);
+            if (postsData !== undefined && postsData !== null){
+              postsData.comments.splice(index, 1);
+            }
           })
         })
 
@@ -222,7 +229,13 @@ export default {
     });
 
     socket.on("receivedNotification " + this.getUserId, data => {
-      this.addNotification({userThatSentFriendship: data.userThatSentFriendship, type: data.type});
+      const index = this.getNotifications.findIndex(notification => {
+        return notification.userThatSentFriendship !== null && notification.userThatSentFriendship.id.toString() === data.userThatSentFriendship.id.toString();
+      })
+
+      if (index < 0){
+        this.addNotification({userThatSentFriendship: data.userThatSentFriendship, type: data.type});
+      }
     });
 
     socket.on("friendThatRequested " + this.getUserId, data => {
@@ -240,12 +253,14 @@ export default {
     if (friendsPostsInfo.status === 200){
       //this.friendsPosts = friendsPostsInfo.data.postsData;
       const filtered = friendsPostsInfo.data.postsData.filter(val => {
-        return val.posts.filter(post => {
-          if (post !== null){
-            post.visible = false;
-            return post;
-          }
-        });
+        if (val !== null && val !== undefined){
+          return val.posts.filter(post => {
+            if (post !== null){
+              post.visible = false;
+              return post;
+            }
+          });
+        }
       });
 
       this.friendsPosts = filtered;
@@ -336,8 +351,10 @@ export default {
 
     if (notifications.length >  0){
       notifications.map(notification => {
+        console.log(notification)
         //friendThatRequested
         if (notification.notification.type === "friendship"){
+          console.log("here")
           this.addNotification({notificationId: notification._id, userThatSentFriendship: notification.notification.userThatSentFriendship, type: notification.notification.type});
         }else if (notification.notification.type === "friendshipStatus"){
           this.addNotification({notificationId: notification._id, msg: notification.notification.msg, userId: notification.notification.id, type: notification.notification.type});
