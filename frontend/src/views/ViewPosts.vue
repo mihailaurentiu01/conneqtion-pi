@@ -203,7 +203,10 @@ export default {
         }
       })
 
-
+      this.$snack.success({
+        text: data.msg,
+        button: "OK"
+      });
     });
 
     socket.on("postCommentDeleted " + this.getUserId, data => {

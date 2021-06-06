@@ -298,7 +298,7 @@ export default {
     })
 
     socket.on("friendDeletedPost " + this.getUserId, data => {
-     this.friendsPosts.splice(data.index, 1);
+      this.friendsPosts.splice(data.index, 1);
 
       this.$snack.success({
         text: data.friend + " deleted a post!",
@@ -351,10 +351,8 @@ export default {
 
     if (notifications.length >  0){
       notifications.map(notification => {
-        console.log(notification)
         //friendThatRequested
         if (notification.notification.type === "friendship"){
-          console.log("here")
           this.addNotification({notificationId: notification._id, userThatSentFriendship: notification.notification.userThatSentFriendship, type: notification.notification.type});
         }else if (notification.notification.type === "friendshipStatus"){
           this.addNotification({notificationId: notification._id, msg: notification.notification.msg, userId: notification.notification.id, type: notification.notification.type});
